@@ -14,16 +14,22 @@ Accessible via un lien public, sans installation, sans compte.
 
 ## Fonctionnement
 
-Au lancement, l'app récupère automatiquement la météo locale (température + vent) via l'API [Open-Meteo](https://open-meteo.com/), gratuite et sans clé.
+L'app récupère la météo via l'API [Open-Meteo](https://open-meteo.com/) (gratuite, sans clé) pour la date et l'heure de ta sortie.
 
 Tu renseignes ensuite :
 - Le matos que t'as dans ton armoire (checklist)
 - Ton profil thermique (frileux ↔ j'ai chaud)
 - L'intensité prévue (endurance / tempo / intensif)
 - La durée prévue (< 1h30 / 1h30–3h / > 3h)
-- Un toggle pluie si la météo auto ne suffit pas
+- La date et l'heure de départ
 
-L'app sort ses recommandations avec un code couleur :
+L'app affiche la météo prévue :
+```
+Départ : 8°C ressentie | Max sur la sortie : 14°C
+Vent : 15 km/h Ouest | UV : 3 | Humidité : 72%
+```
+
+Et sort ses recommandations avec un code couleur :
 - 🟢 **Indispensable**
 - 🟠 **Optionnel**
 - ⚫ **Inutile** (non affiché si tu ne l'as pas)
@@ -32,37 +38,35 @@ L'app sort ses recommandations avec un code couleur :
 
 ## Règles de recommandation
 
+**Température effective = température ressentie + offset profil thermique (± 3°C)**
+
 Les paramètres sont pris en compte dans cet ordre de priorité :
 
 1. **Disponibilité** — un item non coché n'est jamais recommandé
 2. **Intensité** — le paramètre le plus important : intensif = moins de couches
-3. **Vent fort** — protection des extrémités même à bonne température
-4. **Durée longue** — plus conservateur sur les extrémités
-5. **Profil thermique** — décale les seuils de température (± quelques degrés)
+3. **Durée longue** — plus conservateur sur les extrémités
+4. **Profil thermique** — décale la température effective de -3°C à +3°C
 
 ---
 
 ## Catalogue matos
 
-| Item | Zone | Plage d'utilisation |
-|------|------|-------------------|
-| Cuissard long | Jambes | -5°C → 14°C |
-| Cuissard court | Jambes | 12°C → 35°C |
-| Jambières | Jambes | 5°C → 14°C |
-| Maillot manches longues | Torse | 8°C → 14°C |
-| Maillot manches courtes | Torse | 12°C → 35°C |
-| Veste hiver | Torse | -5°C → 10°C |
-| Veste pluie | Torse | 10°C → 35°C |
-| Gilet sans manches | Torse | 10°C → 14°C |
-| Manchettes | Torse | 10°C → 16°C |
-| Couvre-chaussures | Extrémités | -5°C → 8°C |
-| Couvre-orteils | Extrémités | 8°C → 12°C |
-| Gants hiver | Extrémités | -5°C → 8°C |
-| Gants légers | Extrémités | 6°C → 14°C |
-| Bonnet | Extrémités | -5°C → 5°C |
-
-Les items en **gras** sont cochés par défaut (considérés comme basiques) :
-**Cuissard long, Cuissard court, Maillot manches courtes, Veste hiver, Veste pluie, Gilet sans manches, Couvre-chaussures, Gants hiver, Bonnet**
+| Item | Zone | Plage d'utilisation | Dispo par défaut |
+|------|------|---------------------|-----------------|
+| Cuissard long | Jambes | -5°C → 12°C | ✅ |
+| Cuissard court | Jambes | 10°C → 35°C | ✅ |
+| Jambières | Jambes | 5°C → 14°C | ☐ |
+| Maillot manches longues | Torse | 8°C → 14°C | ☐ |
+| Maillot manches courtes | Torse | 12°C → 35°C | ✅ |
+| Veste hiver | Torse | -5°C → 8°C | ✅ |
+| Veste pluie | Torse | 10°C → 35°C | ✅ |
+| Gilet sans manches | Torse | 10°C → 14°C | ✅ |
+| Manchettes | Torse | 10°C → 16°C | ☐ |
+| Couvre-chaussures | Extrémités | -5°C → 5°C | ✅ |
+| Couvre-orteils | Extrémités | 5°C → 8°C | ☐ |
+| Gants hiver | Extrémités | -5°C → 6°C | ✅ |
+| Gants légers | Extrémités | 6°C → 12°C | ☐ |
+| Bonnet | Extrémités | -5°C → 5°C | ✅ |
 
 ---
 
@@ -98,8 +102,8 @@ velo_kit/
 
 ```bash
 # Cloner le repo
-git clone https://github.com/ton-user/velo_kit.git
-cd velo_kit
+git clone https://github.com/ton-user/velo-kit.git
+cd velo-kit
 
 # Créer et activer un environnement virtuel
 python -m venv venv
@@ -124,6 +128,6 @@ streamlit run app.py
 
 ## Évolutions futures envisagées
 
-- Suggestion d'alternative quand deux items sont en compétition (ex: cuissard long vs cuissard court à 13°C)
+- Suggestion d'alternative quand deux items sont en compétition (ex: cuissard long vs cuissard court à 11°C)
 - Profil utilisateur persistant
 - Support multi-activités (trail, route, gravel)
