@@ -37,18 +37,18 @@ class GearItem:
 # Items disponible=True : considérés comme basiques, cochés par défaut en début de session.
 # Items disponible=False : équipement optionnel, l'utilisateur doit le cocher manuellement.
 CATALOGUE = [
-    GearItem("Cuissard long",           "jambes",       -5,  14, groupe_exclusif=["cuissard"]),
-    GearItem("Cuissard court",          "jambes",       12,  35, groupe_exclusif=["cuissard"]),
+    GearItem("Cuissard long",           "jambes",       -5,  12, groupe_exclusif=["cuissard"]),
+    GearItem("Cuissard court",          "jambes",       10,  35, groupe_exclusif=["cuissard"]),
     GearItem("Jambières",               "jambes",        5,  14, disponible=False),
     GearItem("Maillot manches longues", "torse",         8,  14, disponible=False, groupe_exclusif=["maillot", "manchettes"]),
     GearItem("Maillot manches courtes", "torse",        12,  35, groupe_exclusif=["maillot"]),
-    GearItem("Veste hiver",             "torse",        -5,  10, groupe_exclusif=["veste"]),
+    GearItem("Veste hiver",             "torse",        -5,   8, groupe_exclusif=["veste"]),
     GearItem("Veste pluie",             "torse",        10,  35, groupe_exclusif=["veste"]),
     GearItem("Gilet sans manches",      "torse",        10,  14),
     GearItem("Manchettes",              "torse",        10,  16, disponible=False, groupe_exclusif=["manchettes"]),
-    GearItem("Couvre-chaussures",       "extrémités",   -5,   8),
-    GearItem("Couvre-orteils",          "extrémités",    8,  12, disponible=False),
-    GearItem("Gants hiver",             "extrémités",   -5,   8, groupe_exclusif=["gants"]),
-    GearItem("Gants légers",            "extrémités",    6,  14, disponible=False, groupe_exclusif=["gants"]),
+    GearItem("Couvre-chaussures",       "extrémités",   -5,   5),
+    GearItem("Couvre-orteils",          "extrémités",    5,   8, disponible=False),
+    GearItem("Gants hiver",             "extrémités",   -5,   6, groupe_exclusif=["gants"]),
+    GearItem("Gants légers",            "extrémités",    6,  12, disponible=False, groupe_exclusif=["gants"]),
     GearItem("Bonnet",                  "extrémités",   -5,   5),
 ]
