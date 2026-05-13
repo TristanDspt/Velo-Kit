@@ -92,7 +92,6 @@ velo_kit/
 │   └── gear.py             # Classe GearItem + catalogue du matos
 │
 ├── requirements.txt
-├── CLAUDE.md               # Contexte projet pour l'assistant IA
 └── README.md
 ```
 
