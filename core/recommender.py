@@ -8,8 +8,15 @@ vert (indispensable), orange (optionnel) ou absent (inutile/non disponible).
 from core.gear import CATALOGUE, GearItem
 
 OFFSET_ORANGE = 3
-# Plage du slider profil thermique : frileux = +3, j'ai chaud = -3
-OFFSET_SLIDER_MAX = 3
+
+# Offset profil thermique — frileux = température effective plus haute, chaudière = plus basse
+OFFSET_SENSIBILITE = {
+    "🥶🥶": 3,
+    "🥶": 2,
+    "😎": 0,
+    "🔥": -2,
+    "🔥🔥": -3
+}
 
 # Réduction de la température effective selon l'intensité de l'effort
 OFFSET_INTENSITE = {
