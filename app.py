@@ -35,6 +35,7 @@ with st.expander("Comment ça marche ❓"):
         Les recommandations s'adaptent à la température ressentie, pas juste à la température réelle.
     """)
 
+
 with st.container(border=True):
 
     col1, _, col2, _, col3, _, col4 = st.columns([1.2,0.2,2,0.2,2,0.4,2.5])
@@ -70,6 +71,7 @@ with st.container(border=True):
             value=10
         )
 
+
 with st.container(border=True):
     
     _, col1, _, col2, _, col3, _ = st.columns([1,2,1,2,1,2,1])
@@ -96,6 +98,7 @@ with st.container(border=True):
             options=["🥶🥶", "🥶", "😎", "🔥", "🔥🔥"],
             default="😎"
         )
+
 
 if ville_select:
     lat = ville_select["lat"]
@@ -152,3 +155,53 @@ if ville_select:
                 label="Probabilité de Pluie",
                 value=f"{meteo["precipitation_proba"]} %"
             )
+
+
+    with st.container(border=True):
+
+        col1, col2, col3= st.columns([1,2,1])
+
+        with col1:
+            with st.container(border=True):
+                with st.container(border=True):
+                    st.markdown("<h4 style='text-align: center; margin-top: -8px; margin-bottom: -2px;'>Jambes</h4>", unsafe_allow_html=True)
+                for item in CATALOGUE:
+                    if item.partie_du_corps == "jambes":
+                        item.disponible = st.checkbox(item.nom, value=item.disponible)
+                st.write("")
+                st.write("")
+                st.write("")
+                st.write("")
+                st.write("")
+
+        with col2:
+            with st.container(border=True):
+                with st.container(border=True):
+                    st.markdown("<h4 style='text-align: center; margin-top: -8px; margin-bottom: -2px;'>Torse</h4>", unsafe_allow_html=True)
+                col_torse1, col_torse2 = st.columns(2)
+                items_torse = [item for item in CATALOGUE if item.partie_du_corps == "torse"]
+                moitie = len(items_torse) // 2
+            with col_torse1:
+                for item in items_torse[:moitie]:
+                    item.disponible = st.checkbox(item.nom, value=item.disponible)
+            with col_torse2:
+                for item in items_torse[moitie:]:
+                    item.disponible = st.checkbox(item.nom, value=item.disponible)
+
+        with col3:
+            with st.container(border=True):
+                with st.container(border=True):
+                    st.markdown("<h4 style='text-align: center; margin-top: -8px; margin-bottom: -2px;'>Accessoires</h4>", unsafe_allow_html=True)
+                for item in CATALOGUE:
+                    if item.partie_du_corps == "extrémités":
+                        item.disponible = st.checkbox(item.nom, value=item.disponible)
+
+
+    with st.container(border=True):
+        reco = recommend(meteo["temp_ressenti"], sensibilite, intensite, duree, CATALOGUE)
+
+        col1, col2, col3= st.columns([1,2,1])
+        with col1:
+            with st.container(border=True):
+                st.write(reco["vert"])
+                st.write(reco["orange"])
