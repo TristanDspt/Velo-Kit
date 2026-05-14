@@ -44,7 +44,7 @@ CATALOGUE = [
     GearItem("Jambières",               "jambes",         5.1,   12.0, disponible=False),
     GearItem("Maillot manches longues", "torse",          8.1,   12.0, disponible=False),
     GearItem("Maillot manches courtes", "torse",         12.1,  40.0),
-    GearItem("Veste hiver",             "torse",          -10,   8.0),
+    GearItem("Veste hiver",             "torse",        -10.0,   8.0),
     GearItem("Veste pluie",             "torse",          8.0,  40.0),
     GearItem("Maillot UV",              "torse",         25.0,   40.0, disponible=False),
     GearItem("Sous maillot hiver",      "torse",        -10.0,   6.0),
