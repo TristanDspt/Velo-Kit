@@ -21,8 +21,8 @@ OFFSET_SENSIBILITE = {
 # Réduction de la température effective selon l'intensité de l'effort
 OFFSET_INTENSITE = {
     "Endurance": 0,
-    "Tempo": -1.5,
-    "Intensif": -3
+    "Tempo": 1.5,
+    "Intensif": 3
 }
 
 
