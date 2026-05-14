@@ -7,22 +7,22 @@ vert (indispensable), orange (optionnel) ou absent (inutile/non disponible).
 
 from core.gear import CATALOGUE, GearItem
 
-OFFSET_ORANGE = 3
+OFFSET_ORANGE = 2
 
-# Offset profil thermique — frileux = température effective plus haute, chaudière = plus basse
+# Offset profil thermique — frileux = température effective plus basse, chaudière = plus haute
 OFFSET_SENSIBILITE = {
-    "🥶🥶": -3,
-    "🥶": -2,
+    "🥶🥶": -2,
+    "🥶": -1,
     "😎": 0,
-    "🔥": 2,
-    "🔥🔥": 3
+    "🔥": 1,
+    "🔥🔥": 2
 }
 
 # Réduction de la température effective selon l'intensité de l'effort
 OFFSET_INTENSITE = {
     "Endurance": 0,
-    "Tempo": 1.5,
-    "Intensif": 3
+    "Tempo": 1,
+    "Intensif": 2
 }
 
 
