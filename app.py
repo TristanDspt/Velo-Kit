@@ -1,6 +1,6 @@
 import streamlit as st
 from core.gear import CATALOGUE
-from core.weather import get_coordinates, get_weather, build_weather_dict
+from core.weather import get_coordinates, get_meteo, weathercode_to_emoji
 from core.recommender import recommend
 from datetime import date, timedelta
 
@@ -65,26 +65,90 @@ with st.container(border=True):
 
     with col4:
         heure = st.slider(
-            label="Heure",
-            help="Ton heure de départ",
+            label="Heure de départ",
             max_value=24,
             value=10
         )
 
 with st.container(border=True):
     
-    col1, col2, col3 = st.columns(3)
+    _, col1, _, col2, _, col3, _ = st.columns([1,2,1,2,1,2,1])
 
     with col1:
-        duree = st.pills(
+        intensite = st.pills(
             label="Intensité",
-            help="Court < 2h, Moyen 2h -> 4h, Long > 4h\nRetire 1° en moyen et 2° pour le long"
+            options=["Endurance", "Tempo", "Intensif"],
+            default="Endurance"
         )
 
     with col2:
-        intensite = st.pills(
-            label="Durée"
+        duree = st.slider(
+            label="Durée",
+            help="Durée de ta sortie",
+            max_value=8,
+            value=2
         )
 
-lat = ville_select["lat"]
-lon = ville_select["lon"]
+    with col3:
+        sensibilite = st.pills(
+            label="Sensibilitée",
+            help="Frileux ou chaudière ? Ajuste selon ton ressenti habituel sur le vélo",
+            options=["🥶🥶", "🥶", "😎", "🔥", "🔥🔥"],
+            default="😎"
+        )
+
+if ville_select:
+    lat = ville_select["lat"]
+    lon = ville_select["lon"]
+
+    with st.container(border=True):
+        meteo = get_meteo(lat, lon, date_depart, heure, duree)
+        emoji_meteo = weathercode_to_emoji(meteo["weathercode"])
+        
+        _, col1, col2, col3, col4, col5 = st.columns([0.2,2,2,2,2,2])
+
+        with col1:
+            st.markdown(
+                f"<div style='text-align: center; font-size: 120px'>{emoji_meteo}</div>",
+                unsafe_allow_html=True
+            )
+        
+        with col2:
+            st.metric(
+                label="Température",
+                value=f"{meteo["temp_depart"]:.1f} °C"
+            )
+            st.metric(
+                label="Vitesse du vent",
+                value=f"{meteo["vent_vitesse"]:.0f} km/h"
+            )
+
+        with col3:
+            st.metric(
+                label="Température Ressentie",
+                value=f"{meteo["temp_ressenti"]:.1f} °C"
+            )
+            st.metric(
+                label="Direction du vent",
+                value=meteo["vent_direction"]
+            )
+
+        with col4:
+            st.metric(
+                label="Température Ressentie Max",
+                value=f"{meteo["temp_ressenti_max"]:.1f} °C"
+            )
+            st.metric(
+                label="Taux d'Humidité",
+                value=f"{meteo["humidite"]} %"
+            )
+        
+        with col5:
+            st.metric(
+                label="Index UV",
+                value=meteo["uv_index"]
+            )
+            st.metric(
+                label="Probabilité de Pluie",
+                value=f"{meteo["precipitation_proba"]} %"
+            )
