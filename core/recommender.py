@@ -11,11 +11,11 @@ OFFSET_ORANGE = 3
 
 # Offset profil thermique — frileux = température effective plus haute, chaudière = plus basse
 OFFSET_SENSIBILITE = {
-    "🥶🥶": 3,
-    "🥶": 2,
+    "🥶🥶": -3,
+    "🥶": -2,
     "😎": 0,
-    "🔥": -2,
-    "🔥🔥": -3
+    "🔥": 2,
+    "🔥🔥": 3
 }
 
 # Réduction de la température effective selon l'intensité de l'effort
