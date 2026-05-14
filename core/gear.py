@@ -46,6 +46,7 @@ CATALOGUE = [
     GearItem("Maillot manches courtes", "torse",        13,  35),
     GearItem("Veste hiver",             "torse",        -5,   8),
     GearItem("Veste pluie",             "torse",        10,  35),
+    GearItem("Maillot UV",              "torse",        25,   35, disponible=False),
     GearItem("Sous maillot hiver",      "torse",        -5,   5),
     GearItem("Sous maillot mi-saison",  "torse",         6,   12, disponible=False),
     GearItem("Sous maillot ete",        "torse",        13,   35, disponible=False),
