@@ -54,6 +54,6 @@ CATALOGUE = [
     GearItem("Couvre-chaussures",       "extrémités",   -5,   5),
     GearItem("Couvre-orteils",          "extrémités",    5,    8, disponible=False),
     GearItem("Gants hiver",             "extrémités",   -5,   5),
-    GearItem("Gants légers",            "extrémités",    6,  12),
-    GearItem("Bonnet",                  "extrémités",   -5,   5),
+    GearItem("Gants légers",            "extrémités",    6,   12, disponible=False),
+    GearItem("Bonnet",                  "extrémités",   -5,    5, disponible=False),
 ]
