@@ -25,19 +25,15 @@ OFFSET_INTENSITE = {
     "Intensif": -3
 }
 
-# Augmentation de la température effective selon la durée (sorties longues = plus conservateur)
-OFFSET_DUREE = {
-    "Court": 0,       # < 2h
-    "Moyen": 1,       # 2h-4h
-    "Long": 2         # > 4h
-}
 
-
-def recommend(apparent_temp, slider, intensite, duree, catalogue):
+def recommend(apparent_temp, sensibilite, intensite, duree, catalogue):
     """Recommande les équipements adaptés à la session.
 
     La température effective est calculée ainsi :
-        temp_effective = apparent_temp + slider + OFFSET_INTENSITE[intensite] + OFFSET_DUREE[duree]
+        temp_effective = apparent_temp + OFFSET_SENSIBILITE[sensibilite] + OFFSET_INTENSITE[intensite] + offset_duree
+
+    Où offset_duree vaut 0 si duree < 2h, 1 si duree <= 4h, 2 au-delà
+    (sorties longues = plus conservateur sur les extrémités).
 
     Chaque item disponible du catalogue est classé :
     - vert   : temp_effective dans [temp_min, temp_max] de l'item → indispensable
@@ -46,9 +42,9 @@ def recommend(apparent_temp, slider, intensite, duree, catalogue):
 
     Args:
         apparent_temp: Température ressentie à l'heure de départ (°C), issue de la météo.
-        slider: Offset du profil thermique, entre -3 (j'ai chaud) et +3 (frileux).
+        sensibilite: Profil thermique — clé de OFFSET_SENSIBILITE (ex: "🥶🥶", "😎", "🔥🔥").
         intensite: Niveau d'effort — "Endurance", "Tempo" ou "Intensif".
-        duree: Durée de la sortie — "Court", "Moyen" ou "Long".
+        duree: Durée de la sortie en heures (entier ou float).
         catalogue: Liste de GearItem à évaluer.
 
     Returns:
@@ -56,8 +52,14 @@ def recommend(apparent_temp, slider, intensite, duree, catalogue):
         - "vert"   : list[GearItem] — équipements indispensables
         - "orange" : list[GearItem] — équipements optionnels
     """
-
-    temp_effective = apparent_temp + slider + OFFSET_INTENSITE[intensite] + OFFSET_DUREE[duree]
+    if duree < 2:
+        offset = 0
+    elif duree <= 4:
+        offset = 1
+    else:
+        offset = 2
+    
+    temp_effective = apparent_temp + OFFSET_SENSIBILITE[sensibilite] + OFFSET_INTENSITE[intensite] + offset
 
     vert = []
     orange = []
