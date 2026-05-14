@@ -1,3 +1,9 @@
+"""Modèle de données et catalogue des équipements cyclistes.
+
+Ce module est le seul endroit du projet à utiliser de la POO.
+Tout le reste (météo, recommandation, UI) s'appuie sur des fonctions.
+"""
+
 
 class GearItem:
     """Représente un équipement cycliste avec ses conditions d'utilisation.
@@ -8,7 +14,6 @@ class GearItem:
         temp_min: Température minimale d'utilisation (°C).
         temp_max: Température maximale d'utilisation (°C).
         disponible: True si l'utilisateur possède cet item (coché en début de session).
-        groupe_exclusif: Groupes d'exclusivité mutuels — le recommender ne retient qu'un item par groupe.
     """
 
     def __init__(
@@ -18,37 +23,34 @@ class GearItem:
         temp_min: int,
         temp_max: int,
         disponible: bool = True,
-        groupe_exclusif: list = [],
     ):
         self.nom = nom
         self.partie_du_corps = partie_du_corps
         self.temp_min = temp_min
         self.temp_max = temp_max
         self.disponible = disponible
-        self.groupe_exclusif = groupe_exclusif if groupe_exclusif is not None else []
 
     def __repr__(self) -> str:
         return (
-            f"GearItem({self.nom}, {self.temp_min}°C / {self.temp_max}°C, "
-            f"disponible: {self.disponible}, groupe: {self.groupe_exclusif})"
+            f"GearItem({self.nom}, {self.temp_min}°C / {self.temp_max}°C, disponible: {self.disponible})"
         )
 
 
 # Items disponible=True : considérés comme basiques, cochés par défaut en début de session.
 # Items disponible=False : équipement optionnel, l'utilisateur doit le cocher manuellement.
 CATALOGUE = [
-    GearItem("Cuissard long",           "jambes",       -5,  12, groupe_exclusif=["cuissard"]),
-    GearItem("Cuissard court",          "jambes",       10,  35, groupe_exclusif=["cuissard"]),
+    GearItem("Cuissard long",           "jambes",       -5,  10),
+    GearItem("Cuissard court",          "jambes",       11,  35),
     GearItem("Jambières",               "jambes",        5,  14, disponible=False),
-    GearItem("Maillot manches longues", "torse",         8,  14, disponible=False, groupe_exclusif=["maillot", "manchettes"]),
-    GearItem("Maillot manches courtes", "torse",        12,  35, groupe_exclusif=["maillot"]),
-    GearItem("Veste hiver",             "torse",        -5,   8, groupe_exclusif=["veste"]),
-    GearItem("Veste pluie",             "torse",        10,  35, groupe_exclusif=["veste"]),
+    GearItem("Maillot manches longues", "torse",         8,  12, disponible=False),
+    GearItem("Maillot manches courtes", "torse",        13,  35),
+    GearItem("Veste hiver",             "torse",        -5,   8),
+    GearItem("Veste pluie",             "torse",        10,  35),
     GearItem("Gilet sans manches",      "torse",        10,  14),
-    GearItem("Manchettes",              "torse",        10,  16, disponible=False, groupe_exclusif=["manchettes"]),
+    GearItem("Manchettes",              "torse",        10,  16, disponible=False),
     GearItem("Couvre-chaussures",       "extrémités",   -5,   5),
     GearItem("Couvre-orteils",          "extrémités",    5,   8, disponible=False),
-    GearItem("Gants hiver",             "extrémités",   -5,   6, groupe_exclusif=["gants"]),
-    GearItem("Gants légers",            "extrémités",    6,  12, disponible=False, groupe_exclusif=["gants"]),
+    GearItem("Gants hiver",             "extrémités",   -5,   5),
+    GearItem("Gants légers",            "extrémités",    6,  12),
     GearItem("Bonnet",                  "extrémités",   -5,   5),
 ]
