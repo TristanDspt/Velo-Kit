@@ -1,18 +1,5 @@
-"""Appels API météo et géocodage via Open-Meteo (gratuit, sans clé).
-
-Fonctions exposées :
-    get_coordinates    — recherche lat/lon d'une ville
-    get_weather        — récupère les données horaires brutes
-    build_weather_dict — transforme le JSON brut en dict propre
-    degrees_to_direction — convertit un angle en point cardinal
-    get_meteo          — wrapper tout-en-un pour app.py
-"""
-
 import requests
-import streamlit as st
 
-
-@st.cache_data
 def get_coordinates(ville: str) -> list[dict]:
     """Recherche une ville via l'API geocoding Open-Meteo.
 
@@ -44,7 +31,6 @@ def get_coordinates(ville: str) -> list[dict]:
     return data
 
 
-@st.cache_data
 def get_weather(lat, lon, date):
     """Récupère les données météo horaires pour une journée via l'API Open-Meteo.
 
@@ -128,24 +114,3 @@ def degrees_to_direction(degres):
     directions = ["Nord", "Nord-Est", "Est", "Sud-Est", "Sud", "Sud-Ouest", "Ouest", "Nord-Ouest"]
     index = int((degres + 22.5) % 360 / 45)
     return directions[index]
-
-def get_meteo(lat, lon, date, heure, duree):
-    """Récupère et transforme les données météo en un seul appel.
-
-    Wrapper qui enchaîne get_weather et build_weather_dict pour simplifier
-    l'usage dans app.py.
-
-    Args:
-        lat: Latitude du lieu.
-        lon: Longitude du lieu.
-        date: Date de la sortie au format "YYYY-MM-DD".
-        heure: Heure de départ en entier (ex: 8 pour 08:00).
-        duree: Durée de la sortie en heures (entier).
-
-    Returns:
-        Dict météo propre (voir build_weather_dict), ou None si l'heure
-        de départ est introuvable dans les données.
-    """
-    date = date.strftime("%Y-%m-%d")
-    raw = get_weather(lat, lon, date)
-    return build_weather_dict(raw, date, heure, duree)
