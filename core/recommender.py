@@ -6,7 +6,7 @@ vert (indispensable), orange (optionnel) ou absent (inutile/non disponible).
 """
 
 from core.gear import CATALOGUE, GearItem
-import streamlit as st
+
 OFFSET_ORANGE = 2
 
 # Offset profil thermique — frileux = température effective plus basse, chaudière = plus haute
@@ -51,6 +51,7 @@ def recommend(apparent_temp, sensibilite, intensite, duree, catalogue):
         Dict avec deux clés :
         - "vert"   : list[GearItem] — équipements indispensables
         - "orange" : list[GearItem] — équipements optionnels
+        - "temp_effective" : float — temp ressentie avec les params de l'user
     """
     if duree <= 2:
         offset = 0
@@ -60,7 +61,6 @@ def recommend(apparent_temp, sensibilite, intensite, duree, catalogue):
         offset = 2
     
     temp_effective = apparent_temp + OFFSET_SENSIBILITE[sensibilite] + OFFSET_INTENSITE[intensite] + offset
-    st.write(f"temp_effective: {temp_effective}")
 
     vert = []
     orange = []
@@ -72,4 +72,20 @@ def recommend(apparent_temp, sensibilite, intensite, duree, catalogue):
             elif item.temp_min - OFFSET_ORANGE <= temp_effective <= item.temp_max + OFFSET_ORANGE:
                 orange.append(item)
     
-    return {"vert": vert, "orange": orange}
+    for item in CATALOGUE:
+        if item.depends_on:
+            dependance = is_recommend(item.depends_on, vert, orange)
+            if not dependance:
+                if item in vert:
+                    vert.remove(item)
+                elif item in orange:
+                    orange.remove(item)
+
+    return {"vert": vert, "orange": orange, "temp_effective": temp_effective}
+
+
+def is_recommend(nom, vert, orange):
+    for item in vert + orange:
+        if item.nom == nom:
+            return True   
+    return False
