@@ -6,7 +6,7 @@ vert (indispensable), orange (optionnel) ou absent (inutile/non disponible).
 """
 
 from core.gear import CATALOGUE, GearItem
-
+import streamlit as st
 OFFSET_ORANGE = 2
 
 # Offset profil thermique — frileux = température effective plus basse, chaudière = plus haute
@@ -60,6 +60,7 @@ def recommend(apparent_temp, sensibilite, intensite, duree, catalogue):
         offset = 2
     
     temp_effective = apparent_temp + OFFSET_SENSIBILITE[sensibilite] + OFFSET_INTENSITE[intensite] + offset
+    st.write(f"temp_effective: {temp_effective}")
 
     vert = []
     orange = []
