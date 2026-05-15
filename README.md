@@ -8,7 +8,7 @@ Accessible via un lien public, sans installation, sans compte.
 
 ## Demo
 
-> _lien à ajouter après déploiement Streamlit Cloud_
+[🚴 VeloKit](https://velo-kit.streamlit.app)
 
 ---
 
