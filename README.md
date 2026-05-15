@@ -20,32 +20,30 @@ Tu renseignes ensuite :
 - Le matos que t'as dans ton armoire (checklist)
 - Ton profil thermique (frileux ↔ j'ai chaud)
 - L'intensité prévue (endurance / tempo / intensif)
-- La durée prévue (< 1h30 / 1h30–3h / > 3h)
+- La durée prévue
 - La date et l'heure de départ
 
-L'app affiche la météo prévue :
-```
-Départ : 8°C ressentie | Max sur la sortie : 14°C
-Vent : 15 km/h Ouest | UV : 3 | Humidité : 72%
-```
-
-Et sort ses recommandations avec un code couleur :
+L'app affiche la météo prévue et sort ses recommandations avec un code couleur :
 - 🟢 **Indispensable**
 - 🟠 **Optionnel**
-- ⚫ **Inutile** (non affiché si tu ne l'as pas)
 
 ---
 
 ## Règles de recommandation
 
-**Température effective = température ressentie + offset profil thermique (± 3°C)**
+**Température effective = température ressentie + offset profil thermique + offset intensité + offset durée**
 
 Les paramètres sont pris en compte dans cet ordre de priorité :
 
 1. **Disponibilité** — un item non coché n'est jamais recommandé
-2. **Intensité** — le paramètre le plus important : intensif = moins de couches
-3. **Durée longue** — plus conservateur sur les extrémités
-4. **Profil thermique** — décale la température effective de -3°C à +3°C
+2. **Intensité** — intensif = tu chauffes plus = moins de couches
+3. **Durée** — sortie longue = plus conservateur sur les extrémités
+4. **Profil thermique** — décale la température effective de -2°C à +2°C
+
+Certains items ont des **dépendances** — ils n'apparaissent que si un autre item est recommandé :
+- Jambières → uniquement avec cuissard court
+- Manchettes → uniquement avec maillot manches courtes
+- Gilet sans manches → uniquement avec maillot manches courtes
 
 ---
 
@@ -53,20 +51,24 @@ Les paramètres sont pris en compte dans cet ordre de priorité :
 
 | Item | Zone | Plage d'utilisation | Dispo par défaut |
 |------|------|---------------------|-----------------|
-| Cuissard long | Jambes | -5°C → 12°C | ✅ |
-| Cuissard court | Jambes | 10°C → 35°C | ✅ |
-| Jambières | Jambes | 5°C → 14°C | ☐ |
-| Maillot manches longues | Torse | 8°C → 14°C | ☐ |
-| Maillot manches courtes | Torse | 12°C → 35°C | ✅ |
-| Veste hiver | Torse | -5°C → 8°C | ✅ |
-| Veste pluie | Torse | 10°C → 35°C | ✅ |
+| Cuissard long | Jambes | -10°C → 10°C | ✅ |
+| Cuissard court | Jambes | 10.1°C → 40°C | ✅ |
+| Jambières | Jambes | 5.1°C → 12°C | ☐ |
+| Maillot manches longues | Torse | 8.1°C → 12°C | ☐ |
+| Maillot manches courtes | Torse | 12.1°C → 40°C | ✅ |
+| Veste hiver | Torse | -10°C → 8°C | ✅ |
+| Veste pluie | Torse | 8°C → 40°C | ✅ |
+| Maillot UV | Torse | 25°C → 40°C | ☐ |
+| Sous maillot hiver | Torse | -10°C → 6°C | ✅ |
+| Sous maillot mi-saison | Torse | 6.1°C → 12°C | ☐ |
+| Sous maillot été | Torse | 12.1°C → 40°C | ☐ |
 | Gilet sans manches | Torse | 10°C → 14°C | ✅ |
 | Manchettes | Torse | 10°C → 16°C | ☐ |
-| Couvre-chaussures | Extrémités | -5°C → 5°C | ✅ |
-| Couvre-orteils | Extrémités | 5°C → 8°C | ☐ |
-| Gants hiver | Extrémités | -5°C → 6°C | ✅ |
-| Gants légers | Extrémités | 6°C → 12°C | ☐ |
-| Bonnet | Extrémités | -5°C → 5°C | ✅ |
+| Couvre-chaussures | Extrémités | -10°C → 5°C | ✅ |
+| Couvre-orteils | Extrémités | 5.1°C → 8°C | ☐ |
+| Gants hiver | Extrémités | -10°C → 6°C | ✅ |
+| Gants légers | Extrémités | 6.1°C → 12°C | ☐ |
+| Bonnet | Extrémités | -10°C → 5°C | ☐ |
 
 ---
 
@@ -117,7 +119,7 @@ streamlit run app.py
 
 ---
 
-## Ce que l'app ne fait pas
+## Ce que l'app ne fait pas (pour l'instant)
 
 - Pas de stockage de profil entre les sessions
 - Pas d'authentification
@@ -127,6 +129,10 @@ streamlit run app.py
 
 ## Évolutions futures envisagées
 
-- Suggestion d'alternative quand deux items sont en compétition (ex: cuissard long vs cuissard court à 11°C)
+- Affichage de la température effective dans le bloc résultats
+- Mise en forme conditionnelle des métriques météo (alertes vent / UV / pluie)
+- Toggle franchissement de col : coupe-vent + gants si altitude > seuil et humidité > seuil
+- Direction vent dominante sur la sortie
+- Icônes météo dynamiques
+- Suggestion d'alternative quand deux items sont en compétition
 - Profil utilisateur persistant
-- Support multi-activités (trail, route, gravel)
