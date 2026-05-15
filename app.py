@@ -91,7 +91,7 @@ with st.expander("Détails de ta sortie", expanded=True):
     with col7:
         sensibilite = st.pills(
             label="Sensibilitée",
-            help="Frileux ou chaudière ? Ajuste selon ton ressenti habituel sur le vélo",
+            help="Ajoute ou retire 1°, 2°",
             options=["🥶🥶", "🥶", "😎", "🔥", "🔥🔥"],
             default="😎"
         )
@@ -230,3 +230,33 @@ if ville_select:
                     st.markdown(f"<p style='padding-left: 40px;'>🟢 {item.nom}</p>", unsafe_allow_html=True)
                 for item in item_orange_extre:
                     st.markdown(f"<p style='padding-left: 40px;'>🟠 {item.nom}</p>", unsafe_allow_html=True)
+
+
+with st.expander("Debug / Catalogue"):
+        
+        st.write(f"Température Ressentie avec tes paramètres: {reco["temp_effective"]}")
+        col1, col2, col3= st.columns([1,2,1])
+
+        with col1:
+            with st.container(border=True):
+                for item in CATALOGUE:
+                    if item.partie_du_corps == "jambes":
+                        st.write(f"{item.nom} : {item.temp_min} °C, {item.temp_max} °C")
+
+        with col2:
+            with st.container(border=True):
+                col_torse1, col_torse2 = st.columns(2)
+                items_torse = [item for item in CATALOGUE if item.partie_du_corps == "torse"]
+                moitie = len(items_torse) // 2
+            with col_torse1:
+                for item in items_torse[:moitie]:
+                    st.write(f"{item.nom} : {item.temp_min} °C, {item.temp_max} °C")
+            with col_torse2:
+                for item in items_torse[moitie:]:
+                    st.write(f"{item.nom} : {item.temp_min} °C, {item.temp_max} °C")
+
+        with col3:
+            with st.container(border=True):
+                for item in CATALOGUE:
+                    if item.partie_du_corps == "extrémités":
+                        st.write(f"{item.nom} : {item.temp_min} °C, {item.temp_max} °C")
