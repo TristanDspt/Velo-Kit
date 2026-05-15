@@ -26,7 +26,7 @@ OFFSET_INTENSITE = {
 }
 
 
-def recommend(apparent_temp, sensibilite, intensite, duree, catalogue):
+def recommend(meteo, sensibilite, intensite, duree, catalogue):
     """Recommande les équipements adaptés à la session.
 
     La température effective est calculée ainsi :
@@ -56,11 +56,11 @@ def recommend(apparent_temp, sensibilite, intensite, duree, catalogue):
     if duree <= 2:
         offset = 0
     elif duree <= 4:
-        offset = 1
+        offset = -1
     else:
-        offset = 2
+        offset = -2
     
-    temp_effective = apparent_temp + OFFSET_SENSIBILITE[sensibilite] + OFFSET_INTENSITE[intensite] + offset
+    temp_effective = meteo["temp_ressenti"] + OFFSET_SENSIBILITE[sensibilite] + OFFSET_INTENSITE[intensite] + offset
 
     vert = []
     orange = []
@@ -72,7 +72,7 @@ def recommend(apparent_temp, sensibilite, intensite, duree, catalogue):
             elif item.temp_min - OFFSET_ORANGE <= temp_effective <= item.temp_max + OFFSET_ORANGE:
                 orange.append(item)
     
-    for item in CATALOGUE:
+    for item in catalogue:
         if item.depends_on:
             dependance = is_recommend(item.depends_on, vert, orange)
             if not dependance:
@@ -80,6 +80,18 @@ def recommend(apparent_temp, sensibilite, intensite, duree, catalogue):
                     vert.remove(item)
                 elif item in orange:
                     orange.remove(item)
+        if not meteo["uv_index"] >= 8:
+                if item in vert and item.nom == "Maillot UV":
+                    vert.remove(item)
+                elif item in orange and item.nom == "Maillot UV":
+                    orange.remove(item)
+        if not meteo["precipitation_proba"] >= 33.33:
+                if item in vert and item.nom == "Veste pluie":
+                    vert.remove(item)
+                elif item in orange and item.nom == "Veste pluie":
+                    orange.remove(item)
+
+    
 
     return {"vert": vert, "orange": orange, "temp_effective": temp_effective}
 
