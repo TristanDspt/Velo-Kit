@@ -35,8 +35,7 @@ with st.expander("Comment ça marche ❓"):
         Les recommandations s'adaptent à la température ressentie, pas juste à la température réelle.
     """)
 
-
-with st.container(border=True):
+with st.expander("Détails de ta sortie", expanded=True):
 
     col1, _, col2, _, col3, _, col4 = st.columns([1.2,0.2,2,0.2,2,0.4,2.5])
 
@@ -71,19 +70,17 @@ with st.container(border=True):
             value=10
         )
 
-
-with st.container(border=True):
     
-    _, col1, _, col2, _, col3, _ = st.columns([1,2,1,2,1,2,1])
+    _, col5, _, col6, _, col7, _ = st.columns([1,2,1,2,1,2,1])
 
-    with col1:
+    with col5:
         intensite = st.pills(
             label="Intensité",
             options=["Endurance", "Tempo", "Intensif"],
             default="Endurance"
         )
 
-    with col2:
+    with col6:
         duree = st.slider(
             label="Durée",
             help="Durée de ta sortie",
@@ -91,7 +88,7 @@ with st.container(border=True):
             value=2
         )
 
-    with col3:
+    with col7:
         sensibilite = st.pills(
             label="Sensibilitée",
             help="Frileux ou chaudière ? Ajuste selon ton ressenti habituel sur le vélo",
@@ -157,7 +154,7 @@ if ville_select:
             )
 
 
-    with st.container(border=True):
+    with st.expander("Selectionne le matos dispo dans ton armoire", expanded=True):
 
         col1, col2, col3= st.columns([1,2,1])
 
@@ -200,8 +197,36 @@ if ville_select:
     with st.container(border=True):
         reco = recommend(meteo["temp_ressenti"], sensibilite, intensite, duree, CATALOGUE)
 
-        col1, col2, col3= st.columns([1,2,1])
+        col1, col2, col3= st.columns([1,1,1])
         with col1:
             with st.container(border=True):
-                st.write(reco["vert"])
-                st.write(reco["orange"])
+                with st.container(border=True):
+                    st.markdown("<h4 style='text-align: center; margin-top: -8px; margin-bottom: -2px;'>Torse</h4>", unsafe_allow_html=True)
+                item_vert_torse = [item for item in reco["vert"] if item.partie_du_corps == "torse"]
+                item_orange_torse = [item for item in reco["orange"] if item.partie_du_corps == "torse"]
+                for item in item_vert_torse:
+                    st.markdown(f"<p style='padding-left: 40px;'>🟢 {item.nom}</p>", unsafe_allow_html=True)
+                for item in item_orange_torse:
+                    st.markdown(f"<p style='padding-left: 40px;'>🟠 {item.nom}</p>", unsafe_allow_html=True)
+
+        with col2:
+            with st.container(border=True):
+                with st.container(border=True):
+                    st.markdown("<h4 style='text-align: center; margin-top: -8px; margin-bottom: -2px;'>Jambes</h4>", unsafe_allow_html=True)
+                item_vert_jambes = [item for item in reco["vert"] if item.partie_du_corps == "jambes"]
+                item_orange_jambes = [item for item in reco["orange"] if item.partie_du_corps == "jambes"]
+                for item in item_vert_jambes:
+                    st.markdown(f"<p style='padding-left: 40px;'>🟢 {item.nom}</p>", unsafe_allow_html=True)
+                for item in item_orange_jambes:
+                    st.markdown(f"<p style='padding-left: 40px;'>🟠 {item.nom}</p>", unsafe_allow_html=True)
+
+        with col3:
+            with st.container(border=True):
+                with st.container(border=True):
+                    st.markdown("<h4 style='text-align: center; margin-top: -8px; margin-bottom: -2px;'>Accessoires</h4>", unsafe_allow_html=True)
+                item_vert_extre = [item for item in reco["vert"] if item.partie_du_corps == "extrémités"]
+                item_orange_extre = [item for item in reco["orange"] if item.partie_du_corps == "extrémités"]
+                for item in item_vert_extre:
+                    st.markdown(f"<p style='padding-left: 40px;'>🟢 {item.nom}</p>", unsafe_allow_html=True)
+                for item in item_orange_extre:
+                    st.markdown(f"<p style='padding-left: 40px;'>🟠 {item.nom}</p>", unsafe_allow_html=True)
