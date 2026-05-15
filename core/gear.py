@@ -43,7 +43,7 @@ class GearItem:
 CATALOGUE = [
     GearItem("Cuissard long",           "jambes",       -10.0,  10.0),
     GearItem("Cuissard court",          "jambes",        10.1,  40.0),
-    GearItem("Jambières",               "jambes",         5.1,   12.0, disponible=False, depends_on="Cuissard court"),
+    GearItem("Jambières",               "jambes",         8.0,   14.0, disponible=False, depends_on="Cuissard court"),
     GearItem("Maillot manches longues", "torse",          8.1,   12.0, disponible=False),
     GearItem("Maillot manches courtes", "torse",         12.1,  40.0),
     GearItem("Veste hiver",             "torse",        -10.0,   8.0),
