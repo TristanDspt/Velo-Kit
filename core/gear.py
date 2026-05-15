@@ -23,12 +23,14 @@ class GearItem:
         temp_min: float,
         temp_max: float,
         disponible: bool = True,
+        depends_on: str = None,
     ):
         self.nom = nom
         self.partie_du_corps = partie_du_corps
         self.temp_min = temp_min
         self.temp_max = temp_max
         self.disponible = disponible
+        self.depends_on = depends_on
 
     def __repr__(self) -> str:
         return (
@@ -41,7 +43,7 @@ class GearItem:
 CATALOGUE = [
     GearItem("Cuissard long",           "jambes",       -10.0,  10.0),
     GearItem("Cuissard court",          "jambes",        10.1,  40.0),
-    GearItem("Jambières",               "jambes",         5.1,   12.0, disponible=False),
+    GearItem("Jambières",               "jambes",         5.1,   12.0, disponible=False, depends_on="Cuissard court"),
     GearItem("Maillot manches longues", "torse",          8.1,   12.0, disponible=False),
     GearItem("Maillot manches courtes", "torse",         12.1,  40.0),
     GearItem("Veste hiver",             "torse",        -10.0,   8.0),
@@ -50,8 +52,8 @@ CATALOGUE = [
     GearItem("Sous maillot hiver",      "torse",        -10.0,   6.0),
     GearItem("Sous maillot mi-saison",  "torse",          6.1,   12.0, disponible=False),
     GearItem("Sous maillot ete",        "torse",         12.1,   40.0, disponible=False),
-    GearItem("Gilet sans manches",      "torse",         10.0,  14.0),
-    GearItem("Manchettes",              "torse",         10.0,   16.0, disponible=False),
+    GearItem("Gilet sans manches",      "torse",         10.0,   14.0, depends_on="Maillot manches courtes"),
+    GearItem("Manchettes",              "torse",         10.0,   16.0, disponible=False, depends_on="Maillot manches courtes"),
     GearItem("Couvre-chaussures",       "extrémités",   -10.0,   5.0),
     GearItem("Couvre-orteils",          "extrémités",     5.1,    8.0, disponible=False),
     GearItem("Gants hiver",             "extrémités",   -10.0,   6.0),
