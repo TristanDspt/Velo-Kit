@@ -4,6 +4,11 @@ from core.weather import get_coordinates, get_meteo, weathercode_to_emoji
 from core.recommender import recommend
 from datetime import date, timedelta
 
+# Initialisation session_state — une seule fois par session utilisateur
+# Evite de muter les objets du CATALOGUE qui sont partagés entre sessions sur Streamlit Cloud
+if "disponibilite" not in st.session_state:
+    st.session_state["disponibilite"] = {item.nom: item.disponible for item in CATALOGUE}
+
 # --- Configuration de la page ---
 st.set_page_config(page_title="VeloKit", page_icon="🚴", layout="wide")
 
@@ -26,7 +31,7 @@ st.markdown("<h1 style='text-align: center; margin-top: -80px; margin-bottom: 10
 # --- Explications ---
 with st.expander("Comment ça marche ❓"):
     st.markdown("""
-        Renseigne ta ville, la date et l'heure de départ — l'app récupère automatiquement 
+        Renseigne ta ville, la date et l heure de départ — l'app récupère automatiquement 
         la météo. Coche ensuite le matos que t'as dans ton armoire, 
         règle ton profil thermique, ton intensité prévue et la durée de ta sortie.
 
@@ -40,7 +45,6 @@ with st.expander("Comment ça marche ❓"):
 # --- Bloc saisie : localisation, date, heure, paramètres de sortie ---
 with st.expander("Détails de ta sortie", expanded=True):
 
-    # Ligne 1 : ville, géocodage, date, heure
     col1, _, col2, _, col3, _, col4 = st.columns([1.2,0.2,2,0.2,2,0.4,2.5])
 
     with col1:
@@ -51,7 +55,6 @@ with st.expander("Détails de ta sortie", expanded=True):
         ville = get_coordinates(ville_saisie)
 
     with col2:
-        # Selectbox alimentée par le géocodage — affiche nom, région, pays
         ville_select = st.selectbox(
             label="Choix",
             help="Choisis ta ville dans la liste",
@@ -75,7 +78,6 @@ with st.expander("Détails de ta sortie", expanded=True):
             value=9
         )
 
-    # Ligne 2 : intensité, durée, sensibilité thermique
     _, col5, _, col6, _, col7, _ = st.columns([1,2,1,2,1,2,1])
 
     with col5:
@@ -102,7 +104,6 @@ with st.expander("Détails de ta sortie", expanded=True):
         )
 
 
-# --- Contenu principal — affiché uniquement si une ville est sélectionnée ---
 if ville_select:
     lat = ville_select["lat"]
     lon = ville_select["lon"]
@@ -112,7 +113,6 @@ if ville_select:
         meteo = get_meteo(lat, lon, date_depart, heure, duree)
         emoji_meteo = weathercode_to_emoji(meteo["weathercode"])
 
-        # Emoji météo + 8 métriques sur 4 colonnes
         _, col1, col2, col3, col4, col5 = st.columns([0.2,2,2,2,2,2])
 
         with col1:
@@ -122,48 +122,23 @@ if ville_select:
             )
 
         with col2:
-            st.metric(
-                label="Température",
-                value=f"{meteo["temp_depart"]:.1f} °C"
-            )
-            st.metric(
-                label="Vitesse du vent",
-                value=f"{meteo["vent_vitesse"]:.0f} km/h"
-            )
+            st.metric(label="Température", value=f"{meteo['temp_depart']:.1f} °C")
+            st.metric(label="Vitesse du vent", value=f"{meteo['vent_vitesse']:.0f} km/h")
 
         with col3:
-            st.metric(
-                label="Température Ressentie",
-                value=f"{meteo["temp_ressenti"]:.1f} °C"
-            )
-            st.metric(
-                label="Direction du vent",
-                value=meteo["vent_direction"]
-            )
+            st.metric(label="Température Ressentie", value=f"{meteo['temp_ressenti']:.1f} °C")
+            st.metric(label="Direction du vent", value=meteo["vent_direction"])
 
         with col4:
-            st.metric(
-                label="Température Ressentie Max",
-                value=f"{meteo["temp_ressenti_max"]:.1f} °C"
-            )
-            st.metric(
-                label="Taux d'Humidité",
-                value=f"{meteo["humidite"]} %"
-            )
+            st.metric(label="Température Ressentie Max", value=f"{meteo['temp_ressenti_max']:.1f} °C")
+            st.metric(label="Taux d'Humidité", value=f"{meteo['humidite']} %")
 
         with col5:
-            st.metric(
-                label="Index UV",
-                value=meteo["uv_index"]
-            )
-            st.metric(
-                label="Probabilité de Pluie",
-                value=f"{meteo["precipitation_proba"]} %"
-            )
+            st.metric(label="Index UV", value=meteo["uv_index"])
+            st.metric(label="Probabilité de Pluie", value=f"{meteo['precipitation_proba']} %")
 
-    # --- Bloc matos — sélection de la disponibilité des équipements ---
+    # --- Bloc matos — sélection via session_state, jamais via item.disponible ---
     with st.expander("Selectionne le matos dispo dans ton armoire", expanded=True):
-        # Checkbox "Tout sélectionner" — force tous les items à disponible=True
         tout_selectionner = st.checkbox("Tout sélectionner")
         col1, col2, col3 = st.columns([1,2,1])
 
@@ -173,7 +148,10 @@ if ville_select:
                     st.markdown("<h4 style='text-align: center; margin-top: -8px; margin-bottom: -2px;'>Jambes</h4>", unsafe_allow_html=True)
                 for item in CATALOGUE:
                     if item.partie_du_corps == "jambes":
-                        item.disponible = st.checkbox(item.nom, value=True if tout_selectionner else item.disponible)
+                        st.session_state["disponibilite"][item.nom] = st.checkbox(
+                            item.nom,
+                            value=True if tout_selectionner else st.session_state["disponibilite"][item.nom]
+                        )
                 st.write("")
                 st.write("")
                 st.write("")
@@ -184,16 +162,21 @@ if ville_select:
             with st.container(border=True):
                 with st.container(border=True):
                     st.markdown("<h4 style='text-align: center; margin-top: -8px; margin-bottom: -2px;'>Torse</h4>", unsafe_allow_html=True)
-                # Torse coupé en 2 sous-colonnes pour équilibrer l'affichage
                 col_torse1, col_torse2 = st.columns(2)
                 items_torse = [item for item in CATALOGUE if item.partie_du_corps == "torse"]
                 moitie = len(items_torse) // 2
             with col_torse1:
                 for item in items_torse[:moitie]:
-                    item.disponible = st.checkbox(item.nom, value=True if tout_selectionner else item.disponible)
+                    st.session_state["disponibilite"][item.nom] = st.checkbox(
+                        item.nom,
+                        value=True if tout_selectionner else st.session_state["disponibilite"][item.nom]
+                    )
             with col_torse2:
                 for item in items_torse[moitie:]:
-                    item.disponible = st.checkbox(item.nom, value=True if tout_selectionner else item.disponible)
+                    st.session_state["disponibilite"][item.nom] = st.checkbox(
+                        item.nom,
+                        value=True if tout_selectionner else st.session_state["disponibilite"][item.nom]
+                    )
 
         with col3:
             with st.container(border=True):
@@ -201,7 +184,14 @@ if ville_select:
                     st.markdown("<h4 style='text-align: center; margin-top: -8px; margin-bottom: -2px;'>Accessoires</h4>", unsafe_allow_html=True)
                 for item in CATALOGUE:
                     if item.partie_du_corps == "extrémités":
-                        item.disponible = st.checkbox(item.nom, value=True if tout_selectionner else item.disponible)
+                        st.session_state["disponibilite"][item.nom] = st.checkbox(
+                            item.nom,
+                            value=True if tout_selectionner else st.session_state["disponibilite"][item.nom]
+                        )
+
+    # Synchronisation session_state -> CATALOGUE avant appel à recommend()
+    for item in CATALOGUE:
+        item.disponible = st.session_state["disponibilite"][item.nom]
 
     # --- Bloc résultats — recommandations en 3 colonnes ---
     with st.container(border=True):
@@ -213,7 +203,6 @@ if ville_select:
             with st.container(border=True):
                 with st.container(border=True):
                     st.markdown("<h4 style='text-align: center; margin-top: -8px; margin-bottom: -2px;'>Torse</h4>", unsafe_allow_html=True)
-                # Filtrage des items par partie du corps
                 item_vert_torse = [item for item in reco["vert"] if item.partie_du_corps == "torse"]
                 item_orange_torse = [item for item in reco["orange"] if item.partie_du_corps == "torse"]
                 for item in item_vert_torse:
@@ -245,8 +234,7 @@ if ville_select:
 
     # --- Expander debug — catalogue complet + température effective (beta) ---
     with st.expander("Debug / Catalogue"):
-
-        st.write(f"Température ressentie avec tes paramètres: {reco["temp_effective"]:.1f} °C")
+        st.write(f"Température ressentie avec tes paramètres: {reco['temp_effective']:.1f} °C")
         col1, col2, col3 = st.columns([1,2,1])
 
         with col1:
@@ -273,7 +261,7 @@ if ville_select:
                     if item.partie_du_corps == "extrémités":
                         st.write(f"{item.nom} : {item.temp_min} °C, {item.temp_max} °C")
 
-# --- Page d'accueil — affichée tant qu'aucune ville n'est sélectionnée ---
+# --- Page d accueil — affichée tant qu aucune ville n est sélectionnée ---
 else:
     _, col, _ = st.columns(3)
     with col:
