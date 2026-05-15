@@ -14,6 +14,9 @@ class GearItem:
         temp_min: Température minimale d'utilisation (°C).
         temp_max: Température maximale d'utilisation (°C).
         disponible: True si l'utilisateur possède cet item (coché en début de session).
+        depends_on: Nom de l'item dont celui-ci dépend. Si défini, cet item n'est
+            recommandé que si l'item parent est également recommandé (vert ou orange).
+            Ex: "Jambières" depends_on "Cuissard court".
     """
 
     def __init__(
@@ -33,6 +36,7 @@ class GearItem:
         self.depends_on = depends_on
 
     def __repr__(self) -> str:
+        """Représentation lisible d'un GearItem pour le debug."""
         return (
             f"GearItem({self.nom}, {self.temp_min}°C / {self.temp_max}°C, disponible: {self.disponible})"
         )
@@ -43,20 +47,20 @@ class GearItem:
 CATALOGUE = [
     GearItem("Cuissard long",           "jambes",       -10.0,  10.0),
     GearItem("Cuissard court",          "jambes",        10.1,  40.0),
-    GearItem("Jambières",               "jambes",         8.0,   14.0, disponible=False, depends_on="Cuissard court"),
-    GearItem("Maillot manches longues", "torse",          8.1,   12.0, disponible=False),
+    GearItem("Jambières",               "jambes",         8.0,   14.0,  disponible=False, depends_on="Cuissard court"),
+    GearItem("Maillot manches longues", "torse",          8.1,   12.0,  disponible=False),
     GearItem("Maillot manches courtes", "torse",         12.1,  40.0),
     GearItem("Veste hiver",             "torse",        -10.0,   8.0),
     GearItem("Veste pluie",             "torse",          8.0,  40.0),
-    GearItem("Maillot UV",              "torse",         25.0,   40.0, disponible=False),
+    GearItem("Maillot UV",              "torse",         25.0,   40.0,  disponible=False),
     GearItem("Sous maillot hiver",      "torse",        -10.0,   6.0),
-    GearItem("Sous maillot mi-saison",  "torse",          6.1,   12.0, disponible=False),
-    GearItem("Sous maillot ete",        "torse",         12.1,   40.0, disponible=False),
-    GearItem("Gilet sans manches",      "torse",         10.0,   14.0, depends_on="Maillot manches courtes"),
-    GearItem("Manchettes",              "torse",         10.0,   16.0, disponible=False, depends_on="Maillot manches courtes"),
+    GearItem("Sous maillot mi-saison",  "torse",          6.1,   12.0,  disponible=False),
+    GearItem("Sous maillot ete",        "torse",         12.1,   40.0,  disponible=False),
+    GearItem("Gilet sans manches",      "torse",         10.0,   14.0,  depends_on="Maillot manches courtes"),
+    GearItem("Manchettes",              "torse",         10.0,   16.0,  disponible=False, depends_on="Maillot manches courtes"),
     GearItem("Couvre-chaussures",       "extrémités",   -10.0,   5.0),
-    GearItem("Couvre-orteils",          "extrémités",     5.1,    8.0, disponible=False),
+    GearItem("Couvre-orteils",          "extrémités",     5.1,    8.0,  disponible=False),
     GearItem("Gants hiver",             "extrémités",   -10.0,   6.0),
-    GearItem("Gants légers",            "extrémités",     6.1,   12.0, disponible=False),
-    GearItem("Bonnet",                  "extrémités",   -10.0,    5.0, disponible=False),
+    GearItem("Gants légers",            "extrémités",     6.1,   12.0,  disponible=False),
+    GearItem("Bonnet",                  "extrémités",   -10.0,    5.0,  disponible=False),
 ]

@@ -1,11 +1,12 @@
 """Appels API météo et géocodage via Open-Meteo (gratuit, sans clé).
 
 Fonctions exposées :
-    get_coordinates    — recherche lat/lon d'une ville
-    get_weather        — récupère les données horaires brutes
-    build_weather_dict — transforme le JSON brut en dict propre
+    get_coordinates      — recherche lat/lon d'une ville
+    get_weather          — récupère les données horaires brutes
+    build_weather_dict   — transforme le JSON brut en dict propre
     degrees_to_direction — convertit un angle en point cardinal
-    get_meteo          — wrapper tout-en-un pour app.py
+    weathercode_to_emoji — convertit un code WMO en emoji météo
+    get_meteo            — wrapper tout-en-un pour app.py
 """
 
 import requests
@@ -89,12 +90,12 @@ def get_weather(lat, lon, date):
         "latitude": lat,
         "longitude": lon,
         "hourly": [
-            "temperature_2m", 
-            "uv_index", 
-            "relative_humidity_2m", 
-            "apparent_temperature", 
-            "wind_speed_10m", 
-            "precipitation_probability", 
+            "temperature_2m",
+            "uv_index",
+            "relative_humidity_2m",
+            "apparent_temperature",
+            "wind_speed_10m",
+            "precipitation_probability",
             "wind_direction_10m",
             "weathercode"
         ],
@@ -117,18 +118,20 @@ def build_weather_dict(raw, date, heure_depart, duree):
         date: Date de la sortie au format "YYYY-MM-DD".
         heure_depart: Heure de départ en entier (ex: 8 pour 08:00).
         duree: Durée de la sortie en heures (entier), utilisée pour calculer
-               la température ressentie maximale sur la plage horaire.
+               les valeurs max sur la plage horaire.
 
     Returns:
         Dict avec les clés :
         - temp_depart (float)         : température réelle à l'heure de départ (°C)
         - temp_ressenti (float)       : température ressentie à l'heure de départ (°C)
         - temp_ressenti_max (float)   : température ressentie max sur la durée (°C)
-        - vent_vitesse (float)        : vitesse du vent (km/h)
-        - vent_direction (str)        : direction du vent en point cardinal (ex: "Ouest")
-        - uv_index (float)            : index UV
-        - humidite (int)              : humidité relative (%)
-        - precipitation_proba (int)   : probabilité de précipitations (%)
+        - vent_vitesse (float)        : vitesse du vent max sur la durée (km/h)
+        - vent_direction (str)        : direction du vent au départ (ex: "Ouest")
+        - uv_index (float)            : index UV max sur la durée
+        - humidite (int)              : humidité relative max sur la durée (%)
+        - precipitation_proba (int)   : probabilité de précipitations max sur la durée (%)
+        - weathercode (int)           : code WMO au départ → converti en emoji via weathercode_to_emoji()
+        Retourne None si l'heure de départ est introuvable dans les données.
     """
     heure_depart = f"{heure_depart:02d}"
     timestamp = date + "T" + heure_depart + ":00"
@@ -138,7 +141,7 @@ def build_weather_dict(raw, date, heure_depart, duree):
         index_depart = time_list.index(timestamp)
     except ValueError:
         return None
-    
+
     weather_dict = {
         "temp_depart": raw["hourly"]["temperature_2m"][index_depart],
         "temp_ressenti": raw["hourly"]["apparent_temperature"][index_depart],
@@ -154,10 +157,18 @@ def build_weather_dict(raw, date, heure_depart, duree):
 
 
 def degrees_to_direction(degres):
-    """Convertit un angle en degrés (0-360) en point cardinal. Ex: 270 → 'Ouest'."""
+    """Convertit un angle en degrés (0-360) en point cardinal.
+
+    Args:
+        degres: Angle en degrés (0-360).
+
+    Returns:
+        Point cardinal sous forme de string. Ex: 270 → "Ouest".
+    """
     directions = ["Nord", "Nord-Est", "Est", "Sud-Est", "Sud", "Sud-Ouest", "Ouest", "Nord-Ouest"]
     index = int((degres + 22.5) % 360 / 45)
     return directions[index]
+
 
 def get_meteo(lat, lon, date, heure, duree):
     """Récupère et transforme les données météo en un seul appel.
@@ -181,5 +192,13 @@ def get_meteo(lat, lon, date, heure, duree):
     return build_weather_dict(raw, date, heure, duree)
 
 
-def weathercode_to_emoji(code):
-    return WEATHER_EMOJI.get(code, "🌡️")
+def weathercode_to_emoji(code: int) -> str:
+    """Convertit un code météo WMO en emoji.
+
+    Args:
+        code: Code WMO retourné par l'API Open-Meteo.
+
+    Returns:
+        Emoji correspondant au code météo. Retourne "❌" si le code est inconnu.
+    """
+    return WEATHER_EMOJI.get(code, "❌")

@@ -9,7 +9,8 @@ from core.gear import CATALOGUE, GearItem
 
 OFFSET_ORANGE = 2
 
-# Offset profil thermique — frileux = température effective plus basse, chaudière = plus haute
+# Offset profil thermique — frileux = température effective plus basse (plus de couches),
+# chaudière = température effective plus haute (moins de couches)
 OFFSET_SENSIBILITE = {
     "🥶🥶": -2,
     "🥶": -1,
@@ -18,40 +19,54 @@ OFFSET_SENSIBILITE = {
     "🔥🔥": 2
 }
 
-# Réduction de la température effective selon l'intensité de l'effort
+# Offset intensité — plus l'effort est intense, plus on génère de chaleur,
+# donc la température effective augmente et on recommande moins de couches
 OFFSET_INTENSITE = {
     "Endurance": 0,
     "Tempo": 1,
     "Intensif": 2
 }
 
+# Seuils conditionnels météo
+SEUIL_UV = 8           # Index UV au-delà duquel le Maillot UV est recommandé
+SEUIL_PLUIE = 33.33    # Probabilité de pluie (%) au-delà de laquelle la Veste pluie est recommandée
+
 
 def recommend(meteo, sensibilite, intensite, duree, catalogue):
     """Recommande les équipements adaptés à la session.
 
     La température effective est calculée ainsi :
-        temp_effective = apparent_temp + OFFSET_SENSIBILITE[sensibilite] + OFFSET_INTENSITE[intensite] + offset_duree
+        temp_effective = meteo["temp_ressenti"]
+                       + OFFSET_SENSIBILITE[sensibilite]
+                       + OFFSET_INTENSITE[intensite]
+                       + offset_duree
 
-    Où offset_duree vaut 0 si duree < 2h, 1 si duree <= 4h, 2 au-delà
-    (sorties longues = plus conservateur sur les extrémités).
+    Où offset_duree vaut 0 si duree <= 2h, -1 si duree <= 4h, -2 au-delà
+    (sorties longues = plus conservateur, température effective abaissée).
 
     Chaque item disponible du catalogue est classé :
     - vert   : temp_effective dans [temp_min, temp_max] de l'item → indispensable
     - orange : temp_effective dans [temp_min - OFFSET_ORANGE, temp_max + OFFSET_ORANGE] → optionnel
-    - absent du résultat : inutile ou non disponible
+    - absent : inutile ou non disponible
+
+    Après classification, deux passes de nettoyage sont appliquées :
+    - Dépendances (depends_on) : un item est retiré si son item parent n'est pas recommandé
+    - Conditions météo : Maillot UV retiré si uv_index < SEUIL_UV,
+                         Veste pluie retirée si precipitation_proba < SEUIL_PLUIE
 
     Args:
-        apparent_temp: Température ressentie à l'heure de départ (°C), issue de la météo.
+        meteo: Dict météo retourné par get_meteo() — doit contenir au minimum
+               "temp_ressenti", "uv_index" et "precipitation_proba".
         sensibilite: Profil thermique — clé de OFFSET_SENSIBILITE (ex: "🥶🥶", "😎", "🔥🔥").
         intensite: Niveau d'effort — "Endurance", "Tempo" ou "Intensif".
         duree: Durée de la sortie en heures (entier ou float).
         catalogue: Liste de GearItem à évaluer.
 
     Returns:
-        Dict avec deux clés :
-        - "vert"   : list[GearItem] — équipements indispensables
-        - "orange" : list[GearItem] — équipements optionnels
-        - "temp_effective" : float — temp ressentie avec les params de l'user
+        Dict avec trois clés :
+        - "vert"           : list[GearItem] — équipements indispensables
+        - "orange"         : list[GearItem] — équipements optionnels
+        - "temp_effective" : float — température effective calculée avec les paramètres utilisateur
     """
     if duree <= 2:
         offset = 0
@@ -59,7 +74,7 @@ def recommend(meteo, sensibilite, intensite, duree, catalogue):
         offset = -1
     else:
         offset = -2
-    
+
     temp_effective = meteo["temp_ressenti"] + OFFSET_SENSIBILITE[sensibilite] + OFFSET_INTENSITE[intensite] + offset
 
     vert = []
@@ -71,8 +86,10 @@ def recommend(meteo, sensibilite, intensite, duree, catalogue):
                 vert.append(item)
             elif item.temp_min - OFFSET_ORANGE <= temp_effective <= item.temp_max + OFFSET_ORANGE:
                 orange.append(item)
-    
+
+    # Passe de nettoyage — dépendances et conditions météo
     for item in catalogue:
+        # Vérifie les dépendances entre items
         if item.depends_on:
             dependance = is_recommend(item.depends_on, vert, orange)
             if not dependance:
@@ -80,24 +97,36 @@ def recommend(meteo, sensibilite, intensite, duree, catalogue):
                     vert.remove(item)
                 elif item in orange:
                     orange.remove(item)
-        if not meteo["uv_index"] >= 8:
-                if item in vert and item.nom == "Maillot UV":
-                    vert.remove(item)
-                elif item in orange and item.nom == "Maillot UV":
-                    orange.remove(item)
-        if not meteo["precipitation_proba"] >= 33.33:
-                if item in vert and item.nom == "Veste pluie":
-                    vert.remove(item)
-                elif item in orange and item.nom == "Veste pluie":
-                    orange.remove(item)
 
-    
+        # Maillot UV — uniquement si index UV suffisant
+        if not meteo["uv_index"] >= SEUIL_UV:
+            if item in vert and item.nom == "Maillot UV":
+                vert.remove(item)
+            elif item in orange and item.nom == "Maillot UV":
+                orange.remove(item)
+
+        # Veste pluie — uniquement si probabilité de pluie suffisante
+        if not meteo["precipitation_proba"] >= SEUIL_PLUIE:
+            if item in vert and item.nom == "Veste pluie":
+                vert.remove(item)
+            elif item in orange and item.nom == "Veste pluie":
+                orange.remove(item)
 
     return {"vert": vert, "orange": orange, "temp_effective": temp_effective}
 
 
-def is_recommend(nom, vert, orange):
+def is_recommend(nom: str, vert: list, orange: list) -> bool:
+    """Vérifie si un item est présent dans les listes de recommandations.
+
+    Args:
+        nom: Nom de l'item à rechercher.
+        vert: Liste des items indispensables.
+        orange: Liste des items optionnels.
+
+    Returns:
+        True si l'item est trouvé dans vert ou orange, False sinon.
+    """
     for item in vert + orange:
         if item.nom == nom:
-            return True   
+            return True
     return False

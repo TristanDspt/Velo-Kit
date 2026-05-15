@@ -33,17 +33,21 @@ L'app affiche la météo prévue et sort ses recommandations avec un code couleu
 
 **Température effective = température ressentie + offset profil thermique + offset intensité + offset durée**
 
-Les paramètres sont pris en compte dans cet ordre de priorité :
+Les paramètres sont pris en compte dans cet ordre :
 
 1. **Disponibilité** — un item non coché n'est jamais recommandé
-2. **Intensité** — intensif = tu chauffes plus = moins de couches
-3. **Durée** — sortie longue = plus conservateur sur les extrémités
+2. **Intensité** — intensif = tu génères plus de chaleur = moins de couches
+3. **Durée** — sortie longue = plus conservateur, température effective abaissée
 4. **Profil thermique** — décale la température effective de -2°C à +2°C
 
 Certains items ont des **dépendances** — ils n'apparaissent que si un autre item est recommandé :
 - Jambières → uniquement avec cuissard court
 - Manchettes → uniquement avec maillot manches courtes
 - Gilet sans manches → uniquement avec maillot manches courtes
+
+Certains items sont **conditionnels à la météo** :
+- Veste pluie → uniquement si probabilité de pluie > 33%
+- Maillot UV → uniquement si index UV > 8
 
 ---
 
@@ -53,7 +57,7 @@ Certains items ont des **dépendances** — ils n'apparaissent que si un autre i
 |------|------|---------------------|-----------------|
 | Cuissard long | Jambes | -10°C → 10°C | ✅ |
 | Cuissard court | Jambes | 10.1°C → 40°C | ✅ |
-| Jambières | Jambes | 5.1°C → 12°C | ☐ |
+| Jambières | Jambes | 8°C → 14°C | ☐ |
 | Maillot manches longues | Torse | 8.1°C → 12°C | ☐ |
 | Maillot manches courtes | Torse | 12.1°C → 40°C | ✅ |
 | Veste hiver | Torse | -10°C → 8°C | ✅ |
@@ -87,6 +91,8 @@ Certains items ont des **dépendances** — ils n'apparaissent que si un autre i
 velo_kit/
 │
 ├── app.py                  # Point d'entrée Streamlit, UI principale
+├── assets/
+│   └── logo_team_raclette_final.png
 │
 ├── core/
 │   ├── weather.py          # Appel API Open-Meteo + géolocalisation
@@ -103,8 +109,8 @@ velo_kit/
 
 ```bash
 # Cloner le repo
-git clone https://github.com/ton-user/velo-kit.git
-cd velo-kit
+git clone https://github.com/TristanDspt/Velo-Kit.git
+cd Velo-Kit
 
 # Créer et activer un environnement virtuel
 python -m venv venv
@@ -127,12 +133,6 @@ streamlit run app.py
 
 ---
 
-## Évolutions futures envisagées
+## Version beta
 
-- Affichage de la température effective dans le bloc résultats
-- Mise en forme conditionnelle des métriques météo (alertes vent / UV / pluie)
-- Toggle franchissement de col : coupe-vent + gants si altitude > seuil et humidité > seuil
-- Direction vent dominante sur la sortie
-- Icônes météo dynamiques
-- Suggestion d'alternative quand deux items sont en compétition
-- Profil utilisateur persistant
+L'app est en cours de calibration — les plages de température du catalogue sont affinées progressivement avec les retours utilisateurs. Un expander "Debug / Catalogue" est disponible pour visualiser les plages et la température effective calculée.

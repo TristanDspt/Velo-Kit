@@ -4,8 +4,10 @@ from core.weather import get_coordinates, get_meteo, weathercode_to_emoji
 from core.recommender import recommend
 from datetime import date, timedelta
 
+# --- Configuration de la page ---
 st.set_page_config(page_title="VeloKit", page_icon="🚴", layout="wide")
 
+# CSS global — centrage des blocs horizontaux et des radio buttons
 st.markdown("""
     <style>
     [data-testid="stHorizontalBlock"] {
@@ -18,10 +20,10 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# Titre Principal Centré
+# --- Header ---
 st.markdown("<h1 style='text-align: center; margin-top: -80px; margin-bottom: 10px;'>🚴 Velo Kit 🚴</h1>", unsafe_allow_html=True)
 
-# Explications
+# --- Explications ---
 with st.expander("Comment ça marche ❓"):
     st.markdown("""
         Renseigne ta ville, la date et l'heure de départ — l'app récupère automatiquement 
@@ -32,11 +34,13 @@ with st.expander("Comment ça marche ❓"):
         🟢 La tenue de base pour cette sortie  
         🟠 Optionnel — selon ta sensibilité
 
-        Les recommandations s'adaptent à la température ressentie, pas juste à la température réelle.
+        Les recommandations s'adaptent à la température ressentie, pas à la température réelle.
     """)
 
+# --- Bloc saisie : localisation, date, heure, paramètres de sortie ---
 with st.expander("Détails de ta sortie", expanded=True):
 
+    # Ligne 1 : ville, géocodage, date, heure
     col1, _, col2, _, col3, _, col4 = st.columns([1.2,0.2,2,0.2,2,0.4,2.5])
 
     with col1:
@@ -47,6 +51,7 @@ with st.expander("Détails de ta sortie", expanded=True):
         ville = get_coordinates(ville_saisie)
 
     with col2:
+        # Selectbox alimentée par le géocodage — affiche nom, région, pays
         ville_select = st.selectbox(
             label="Choix",
             help="Choisis ta ville dans la liste",
@@ -70,7 +75,7 @@ with st.expander("Détails de ta sortie", expanded=True):
             value=9
         )
 
-    
+    # Ligne 2 : intensité, durée, sensibilité thermique
     _, col5, _, col6, _, col7, _ = st.columns([1,2,1,2,1,2,1])
 
     with col5:
@@ -97,14 +102,17 @@ with st.expander("Détails de ta sortie", expanded=True):
         )
 
 
+# --- Contenu principal — affiché uniquement si une ville est sélectionnée ---
 if ville_select:
     lat = ville_select["lat"]
     lon = ville_select["lon"]
 
+    # --- Bloc météo ---
     with st.container(border=True):
         meteo = get_meteo(lat, lon, date_depart, heure, duree)
         emoji_meteo = weathercode_to_emoji(meteo["weathercode"])
-        
+
+        # Emoji météo + 8 métriques sur 4 colonnes
         _, col1, col2, col3, col4, col5 = st.columns([0.2,2,2,2,2,2])
 
         with col1:
@@ -112,7 +120,7 @@ if ville_select:
                 f"<div style='text-align: center; font-size: 120px'>{emoji_meteo}</div>",
                 unsafe_allow_html=True
             )
-        
+
         with col2:
             st.metric(
                 label="Température",
@@ -142,7 +150,7 @@ if ville_select:
                 label="Taux d'Humidité",
                 value=f"{meteo["humidite"]} %"
             )
-        
+
         with col5:
             st.metric(
                 label="Index UV",
@@ -153,10 +161,11 @@ if ville_select:
                 value=f"{meteo["precipitation_proba"]} %"
             )
 
-
+    # --- Bloc matos — sélection de la disponibilité des équipements ---
     with st.expander("Selectionne le matos dispo dans ton armoire", expanded=True):
+        # Checkbox "Tout sélectionner" — force tous les items à disponible=True
         tout_selectionner = st.checkbox("Tout sélectionner")
-        col1, col2, col3= st.columns([1,2,1])
+        col1, col2, col3 = st.columns([1,2,1])
 
         with col1:
             with st.container(border=True):
@@ -175,6 +184,7 @@ if ville_select:
             with st.container(border=True):
                 with st.container(border=True):
                     st.markdown("<h4 style='text-align: center; margin-top: -8px; margin-bottom: -2px;'>Torse</h4>", unsafe_allow_html=True)
+                # Torse coupé en 2 sous-colonnes pour équilibrer l'affichage
                 col_torse1, col_torse2 = st.columns(2)
                 items_torse = [item for item in CATALOGUE if item.partie_du_corps == "torse"]
                 moitie = len(items_torse) // 2
@@ -193,15 +203,17 @@ if ville_select:
                     if item.partie_du_corps == "extrémités":
                         item.disponible = st.checkbox(item.nom, value=True if tout_selectionner else item.disponible)
 
-
+    # --- Bloc résultats — recommandations en 3 colonnes ---
     with st.container(border=True):
         reco = recommend(meteo, sensibilite, intensite, duree, CATALOGUE)
 
-        col1, col2, col3= st.columns([1,1,1])
+        col1, col2, col3 = st.columns([1,1,1])
+
         with col1:
             with st.container(border=True):
                 with st.container(border=True):
                     st.markdown("<h4 style='text-align: center; margin-top: -8px; margin-bottom: -2px;'>Torse</h4>", unsafe_allow_html=True)
+                # Filtrage des items par partie du corps
                 item_vert_torse = [item for item in reco["vert"] if item.partie_du_corps == "torse"]
                 item_orange_torse = [item for item in reco["orange"] if item.partie_du_corps == "torse"]
                 for item in item_vert_torse:
@@ -231,35 +243,37 @@ if ville_select:
                 for item in item_orange_extre:
                     st.markdown(f"<p style='padding-left: 40px;'>🟠 {item.nom}</p>", unsafe_allow_html=True)
 
-
+    # --- Expander debug — catalogue complet + température effective (beta) ---
     with st.expander("Debug / Catalogue"):
-            
-            st.write(f"Température ressentie avec tes paramètres: {reco["temp_effective"]:.1f} °C")
-            col1, col2, col3= st.columns([1,2,1])
 
-            with col1:
-                with st.container(border=True):
-                    for item in CATALOGUE:
-                        if item.partie_du_corps == "jambes":
-                            st.write(f"{item.nom} : {item.temp_min} °C, {item.temp_max} °C")
+        st.write(f"Température ressentie avec tes paramètres: {reco["temp_effective"]:.1f} °C")
+        col1, col2, col3 = st.columns([1,2,1])
 
-            with col2:
-                with st.container(border=True):
-                    col_torse1, col_torse2 = st.columns(2)
-                    items_torse = [item for item in CATALOGUE if item.partie_du_corps == "torse"]
-                    moitie = len(items_torse) // 2
-                with col_torse1:
-                    for item in items_torse[:moitie]:
-                        st.write(f"{item.nom} : {item.temp_min} °C, {item.temp_max} °C")
-                with col_torse2:
-                    for item in items_torse[moitie:]:
+        with col1:
+            with st.container(border=True):
+                for item in CATALOGUE:
+                    if item.partie_du_corps == "jambes":
                         st.write(f"{item.nom} : {item.temp_min} °C, {item.temp_max} °C")
 
-            with col3:
-                with st.container(border=True):
-                    for item in CATALOGUE:
-                        if item.partie_du_corps == "extrémités":
-                            st.write(f"{item.nom} : {item.temp_min} °C, {item.temp_max} °C")
+        with col2:
+            with st.container(border=True):
+                col_torse1, col_torse2 = st.columns(2)
+                items_torse = [item for item in CATALOGUE if item.partie_du_corps == "torse"]
+                moitie = len(items_torse) // 2
+            with col_torse1:
+                for item in items_torse[:moitie]:
+                    st.write(f"{item.nom} : {item.temp_min} °C, {item.temp_max} °C")
+            with col_torse2:
+                for item in items_torse[moitie:]:
+                    st.write(f"{item.nom} : {item.temp_min} °C, {item.temp_max} °C")
+
+        with col3:
+            with st.container(border=True):
+                for item in CATALOGUE:
+                    if item.partie_du_corps == "extrémités":
+                        st.write(f"{item.nom} : {item.temp_min} °C, {item.temp_max} °C")
+
+# --- Page d'accueil — affichée tant qu'aucune ville n'est sélectionnée ---
 else:
     _, col, _ = st.columns(3)
     with col:
