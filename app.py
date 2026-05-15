@@ -19,7 +19,7 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # Titre Principal Centré
-st.markdown("<h1 style='text-align: center; margin-bottom: 0px;'>🚴 Velo Kit 🚴</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center; margin-top: -80px; margin-bottom: 10px;'>🚴 Velo Kit 🚴</h1>", unsafe_allow_html=True)
 
 # Explications
 with st.expander("Comment ça marche ❓"):
@@ -67,7 +67,7 @@ with st.expander("Détails de ta sortie", expanded=True):
         heure = st.slider(
             label="Heure de départ",
             max_value=24,
-            value=10
+            value=9
         )
 
     
@@ -155,7 +155,7 @@ if ville_select:
 
 
     with st.expander("Selectionne le matos dispo dans ton armoire", expanded=True):
-
+        tout_selectionner = st.checkbox("Tout sélectionner")
         col1, col2, col3= st.columns([1,2,1])
 
         with col1:
@@ -164,7 +164,7 @@ if ville_select:
                     st.markdown("<h4 style='text-align: center; margin-top: -8px; margin-bottom: -2px;'>Jambes</h4>", unsafe_allow_html=True)
                 for item in CATALOGUE:
                     if item.partie_du_corps == "jambes":
-                        item.disponible = st.checkbox(item.nom, value=item.disponible)
+                        item.disponible = st.checkbox(item.nom, value=True if tout_selectionner else item.disponible)
                 st.write("")
                 st.write("")
                 st.write("")
@@ -180,10 +180,10 @@ if ville_select:
                 moitie = len(items_torse) // 2
             with col_torse1:
                 for item in items_torse[:moitie]:
-                    item.disponible = st.checkbox(item.nom, value=item.disponible)
+                    item.disponible = st.checkbox(item.nom, value=True if tout_selectionner else item.disponible)
             with col_torse2:
                 for item in items_torse[moitie:]:
-                    item.disponible = st.checkbox(item.nom, value=item.disponible)
+                    item.disponible = st.checkbox(item.nom, value=True if tout_selectionner else item.disponible)
 
         with col3:
             with st.container(border=True):
@@ -191,11 +191,11 @@ if ville_select:
                     st.markdown("<h4 style='text-align: center; margin-top: -8px; margin-bottom: -2px;'>Accessoires</h4>", unsafe_allow_html=True)
                 for item in CATALOGUE:
                     if item.partie_du_corps == "extrémités":
-                        item.disponible = st.checkbox(item.nom, value=item.disponible)
+                        item.disponible = st.checkbox(item.nom, value=True if tout_selectionner else item.disponible)
 
 
     with st.container(border=True):
-        reco = recommend(meteo["temp_ressenti"], sensibilite, intensite, duree, CATALOGUE)
+        reco = recommend(meteo, sensibilite, intensite, duree, CATALOGUE)
 
         col1, col2, col3= st.columns([1,1,1])
         with col1:
@@ -232,31 +232,36 @@ if ville_select:
                     st.markdown(f"<p style='padding-left: 40px;'>🟠 {item.nom}</p>", unsafe_allow_html=True)
 
 
-with st.expander("Debug / Catalogue"):
-        
-        st.write(f"Température Ressentie avec tes paramètres: {reco["temp_effective"]}")
-        col1, col2, col3= st.columns([1,2,1])
+    with st.expander("Debug / Catalogue"):
+            
+            st.write(f"Température ressentie avec tes paramètres: {reco["temp_effective"]:.1f} °C")
+            col1, col2, col3= st.columns([1,2,1])
 
-        with col1:
-            with st.container(border=True):
-                for item in CATALOGUE:
-                    if item.partie_du_corps == "jambes":
+            with col1:
+                with st.container(border=True):
+                    for item in CATALOGUE:
+                        if item.partie_du_corps == "jambes":
+                            st.write(f"{item.nom} : {item.temp_min} °C, {item.temp_max} °C")
+
+            with col2:
+                with st.container(border=True):
+                    col_torse1, col_torse2 = st.columns(2)
+                    items_torse = [item for item in CATALOGUE if item.partie_du_corps == "torse"]
+                    moitie = len(items_torse) // 2
+                with col_torse1:
+                    for item in items_torse[:moitie]:
+                        st.write(f"{item.nom} : {item.temp_min} °C, {item.temp_max} °C")
+                with col_torse2:
+                    for item in items_torse[moitie:]:
                         st.write(f"{item.nom} : {item.temp_min} °C, {item.temp_max} °C")
 
-        with col2:
-            with st.container(border=True):
-                col_torse1, col_torse2 = st.columns(2)
-                items_torse = [item for item in CATALOGUE if item.partie_du_corps == "torse"]
-                moitie = len(items_torse) // 2
-            with col_torse1:
-                for item in items_torse[:moitie]:
-                    st.write(f"{item.nom} : {item.temp_min} °C, {item.temp_max} °C")
-            with col_torse2:
-                for item in items_torse[moitie:]:
-                    st.write(f"{item.nom} : {item.temp_min} °C, {item.temp_max} °C")
-
-        with col3:
-            with st.container(border=True):
-                for item in CATALOGUE:
-                    if item.partie_du_corps == "extrémités":
-                        st.write(f"{item.nom} : {item.temp_min} °C, {item.temp_max} °C")
+            with col3:
+                with st.container(border=True):
+                    for item in CATALOGUE:
+                        if item.partie_du_corps == "extrémités":
+                            st.write(f"{item.nom} : {item.temp_min} °C, {item.temp_max} °C")
+else:
+    _, col, _ = st.columns(3)
+    with col:
+        st.markdown("<h3 style='text-align: center; margin-top: 50px; margin-bottom: 10px;'>powered by Team Raclette</h3>", unsafe_allow_html=True)
+        st.image("assets/logo_team_raclette_final.png", width='stretch')
