@@ -52,7 +52,7 @@ def recommend(apparent_temp, sensibilite, intensite, duree, catalogue):
         - "vert"   : list[GearItem] — équipements indispensables
         - "orange" : list[GearItem] — équipements optionnels
     """
-    if duree < 2:
+    if duree <= 2:
         offset = 0
     elif duree <= 4:
         offset = 1
