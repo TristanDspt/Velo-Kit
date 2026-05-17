@@ -5,7 +5,10 @@ from core.recommender import recommend
 from core import ui
 from datetime import date, timedelta
 
+
 # Initialisation session_state — une seule fois par session utilisateur
+if "ville_saisie" not in st.session_state:
+    st.session_state["ville_saisie"] = ""
 # Evite de muter les objets du CATALOGUE qui sont partagés entre sessions sur Streamlit Cloud
 if "disponibilite" not in st.session_state:
     st.session_state["disponibilite"] = {item.nom: item.disponible for item in CATALOGUE}
@@ -51,7 +54,8 @@ with st.expander("Détails de ta sortie", expanded=True):
     with col1:
         ville_saisie = st.text_input(
             label="Ville",
-            help="Saisis le nom de ta ville"
+            help="Saisis le nom de ta ville",
+            key="ville_saisie"
         )
         ville = get_coordinates(ville_saisie)
 
