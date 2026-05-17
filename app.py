@@ -133,12 +133,12 @@ if ville_select:
             st.markdown(ui.no_color("Direction du vent", meteo['vent_direction']), unsafe_allow_html=True)
 
         with col5:
-            st.markdown(ui.no_color("Taux d'Humidité", meteo['humidite'], unite="%"), unsafe_allow_html=True)
-            st.markdown(ui.no_color("Probabilité de Pluie", meteo['precipitation_proba'], unite="%"), unsafe_allow_html=True)
-
-        with col6:
             st.markdown(ui.color_uv("Index UV", meteo['uv_index']), unsafe_allow_html=True)
             st.markdown(ui.color_pluie("Quantité de pluie", meteo['precipitation_mm']), unsafe_allow_html=True)
+
+        with col6:
+            st.markdown(ui.no_color("Taux d'Humidité", meteo['humidite'], unite="%"), unsafe_allow_html=True)
+            st.markdown(ui.no_color("Probabilité de Pluie", meteo['precipitation_proba'], unite="%"), unsafe_allow_html=True)
 
     # --- Bloc matos — sélection via session_state, jamais via item.disponible ---
     with st.expander("Selectionne le matos dispo dans ton armoire", expanded=True):

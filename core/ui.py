@@ -19,6 +19,8 @@ def color_temp(label, value):
 def color_vent(label, value):
     if value < 20:
         color = "inherit"
+    elif value < 30:
+        color = "#ffb300"
     elif value < 40:
         color = "#ff8c00"
     else:
@@ -32,9 +34,11 @@ def color_vent(label, value):
     """
 
 def color_rafale(label, value):
-    if value < 40:
+    if value < 30:
         color = "inherit"
-    elif value < 60:
+    elif value < 40:
+        color = "#ffb300"
+    elif value < 50:
         color = "#ff8c00"
     else:
         color = "#ff4444"
