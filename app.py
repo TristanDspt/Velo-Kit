@@ -2,6 +2,7 @@ import streamlit as st
 from core.gear import CATALOGUE
 from core.weather import get_coordinates, get_meteo, weathercode_to_emoji
 from core.recommender import recommend
+from core import ui
 from datetime import date, timedelta
 
 # Initialisation session_state — une seule fois par session utilisateur
@@ -111,29 +112,33 @@ if ville_select:
         meteo = get_meteo(lat, lon, date_depart, heure, duree)
         emoji_meteo = weathercode_to_emoji(meteo["weathercode"])
 
-        _, col1, col2, col3, col4, col5 = st.columns([0.2,2,2,2,2,2])
+        col1, col2, col3, col4, col5, col6 = st.columns(6)
 
         with col1:
             st.markdown(
-                f"<div style='text-align: center; font-size: 120px'>{emoji_meteo}</div>",
+                f"<div style='text-align: center; font-size: 110px'>{emoji_meteo}</div>",
                 unsafe_allow_html=True
             )
 
         with col2:
-            st.metric(label="Température", value=f"{meteo['temp_depart']:.1f} °C")
-            st.metric(label="Vitesse du vent", value=f"{meteo['vent_vitesse']:.0f} km/h")
+            st.markdown(ui.color_temp("Température", meteo['temp_depart']), unsafe_allow_html=True)
+            st.markdown(ui.color_vent("Vitesse du vent", meteo['vent_vitesse']), unsafe_allow_html=True)
 
         with col3:
-            st.metric(label="Température Ressentie", value=f"{meteo['temp_ressenti']:.1f} °C")
-            st.metric(label="Rafales", value=f"{meteo["rafales"]:.0f} km/h")
+            st.markdown(ui.color_temp("Température Ressentie", meteo['temp_ressenti']), unsafe_allow_html=True)
+            st.markdown(ui.color_rafale("Rafales", meteo['rafales']), unsafe_allow_html=True)
 
         with col4:
-            st.metric(label="Température Ressentie Max", value=f"{meteo['temp_ressenti_max']:.1f} °C")
-            st.metric(label="Direction du vent", value=meteo["vent_direction"])
+            st.markdown(ui.color_temp("Température Ressentie Max", meteo['temp_ressenti_max']), unsafe_allow_html=True)
+            st.markdown(ui.no_color("Direction du vent", meteo['vent_direction']), unsafe_allow_html=True)
 
         with col5:
-            st.metric(label="Index UV", value=f"{meteo["uv_index"]:.1f}")
-            st.metric(label="Quantité de pluie", value=f"{meteo['precipitation_mm']:.0f} mm", help="Cumul sur la durée de la sortie")
+            st.markdown(ui.no_color("Taux d'Humidité", meteo['humidite'], unite="%"), unsafe_allow_html=True)
+            st.markdown(ui.no_color("Probabilité de Pluie", meteo['precipitation_proba'], unite="%"), unsafe_allow_html=True)
+
+        with col6:
+            st.markdown(ui.color_uv("Index UV", meteo['uv_index']), unsafe_allow_html=True)
+            st.markdown(ui.color_pluie("Quantité de pluie", meteo['precipitation_mm']), unsafe_allow_html=True)
 
     # --- Bloc matos — sélection via session_state, jamais via item.disponible ---
     with st.expander("Selectionne le matos dispo dans ton armoire", expanded=True):
