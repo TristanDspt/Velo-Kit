@@ -73,7 +73,7 @@ def get_coordinates(ville: str) -> list[dict]:
     return data
 
 
-@st.cache_data
+
 def get_weather(lat, lon, date):
     """Récupère les données météo horaires pour une journée via l'API Open-Meteo.
 
