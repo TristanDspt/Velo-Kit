@@ -65,7 +65,6 @@ with st.expander("Détails de ta sortie", expanded=True):
     with col3:
         date_depart = st.date_input(
             label="Date",
-            help="Date de ta sortie",
             min_value=date.today(),
             max_value=date.today() + timedelta(days=7),
             value=date.today() + timedelta(days=1),
@@ -90,7 +89,6 @@ with st.expander("Détails de ta sortie", expanded=True):
     with col6:
         duree = st.slider(
             label="Durée",
-            help="Durée de ta sortie",
             max_value=8,
             value=2
         )
@@ -127,15 +125,15 @@ if ville_select:
 
         with col3:
             st.metric(label="Température Ressentie", value=f"{meteo['temp_ressenti']:.1f} °C")
-            st.metric(label="Direction du vent", value=meteo["vent_direction"])
+            st.metric(label="Rafales", value=f"{meteo["rafales"]:.0f} km/h")
 
         with col4:
             st.metric(label="Température Ressentie Max", value=f"{meteo['temp_ressenti_max']:.1f} °C")
-            st.metric(label="Taux d'Humidité", value=f"{meteo['humidite']} %")
+            st.metric(label="Direction du vent", value=meteo["vent_direction"])
 
         with col5:
-            st.metric(label="Index UV", value=meteo["uv_index"])
-            st.metric(label="Probabilité de Pluie", value=f"{meteo['precipitation_proba']} %")
+            st.metric(label="Index UV", value=f"{meteo["uv_index"]:.1f}")
+            st.metric(label="Quantité de pluie", value=f"{meteo['precipitation_mm']:.0f} mm", help="Cumul sur la durée de la sortie")
 
     # --- Bloc matos — sélection via session_state, jamais via item.disponible ---
     with st.expander("Selectionne le matos dispo dans ton armoire", expanded=True):

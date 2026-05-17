@@ -92,10 +92,10 @@ def get_weather(lat, lon, date):
         "hourly": [
             "temperature_2m",
             "uv_index",
-            "relative_humidity_2m",
             "apparent_temperature",
             "wind_speed_10m",
-            "precipitation_probability",
+            "wind_gusts_10m",
+            "precipitation",
             "wind_direction_10m",
             "weathercode"
         ],
@@ -147,10 +147,10 @@ def build_weather_dict(raw, date, heure_depart, duree):
         "temp_ressenti": raw["hourly"]["apparent_temperature"][index_depart],
         "temp_ressenti_max": max(raw["hourly"]["apparent_temperature"][index_depart : index_depart + duree]),
         "vent_vitesse": max(raw["hourly"]["wind_speed_10m"][index_depart : index_depart + duree]),
+        "rafales": max(raw["hourly"]["wind_gusts_10m"][index_depart : index_depart + duree]),
         "vent_direction": degrees_to_direction(raw["hourly"]["wind_direction_10m"][index_depart]),
         "uv_index": max(raw["hourly"]["uv_index"][index_depart : index_depart + duree]),
-        "humidite": max(raw["hourly"]["relative_humidity_2m"][index_depart : index_depart + duree]),
-        "precipitation_proba": max(raw["hourly"]["precipitation_probability"][index_depart : index_depart + duree]),
+        "precipitation_mm": sum(raw["hourly"]["precipitation"][index_depart : index_depart + duree]),
         "weathercode": raw["hourly"]["weathercode"][index_depart]
     }
     return weather_dict
