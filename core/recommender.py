@@ -68,14 +68,23 @@ def recommend(meteo, sensibilite, intensite, duree, catalogue):
         - "orange"         : list[GearItem] — équipements optionnels
         - "temp_effective" : float — température effective calculée avec les paramètres utilisateur
     """
-    if duree <= 2:
-        offset = 0
-    elif duree <= 4:
-        offset = -1
-    else:
-        offset = -2
+    temp_effective = meteo["temp_ressenti"] + OFFSET_SENSIBILITE[sensibilite] + OFFSET_INTENSITE[intensite]
 
-    temp_effective = meteo["temp_ressenti"] + OFFSET_SENSIBILITE[sensibilite] + OFFSET_INTENSITE[intensite] + offset
+    offset = 0
+    if temp_effective <= 8:
+        if temp_effective <= 5:
+            seuil_bas, seuil_haut = 2, 4
+        else:
+            seuil_bas, seuil_haut = 3, 6
+
+        if duree <= seuil_bas:
+            offset = 0
+        elif seuil_bas < duree <= seuil_haut:
+            offset = -1
+        else:
+            offset = -2
+
+    temp_effective += offset
 
     vert = []
     orange = []
