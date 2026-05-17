@@ -96,9 +96,17 @@ def recommend(meteo, sensibilite, intensite, duree, catalogue):
             elif item.temp_min - OFFSET_ORANGE <= temp_effective <= item.temp_max + OFFSET_ORANGE:
                 orange.append(item)
 
+    # "Trou" si absence de maillot ML
+    mc = next((i for i in catalogue if i.nom == "Maillot manches courtes"), None)
+    if not is_recommend("Maillot manches longues", vert, orange) and not is_recommend("Veste hiver", vert, []):
+        if mc in orange:
+            orange.remove(mc)
+        if mc and mc.disponible and mc not in vert:
+            vert.append(mc)
+
     # Passe de nettoyage — dépendances et conditions météo
     for item in catalogue:
-        # Vérifie les dépendances entre items
+        # Vérifie les dépendances entre items (et que l'item enfant suive le parent)
         if item.depends_on:
             dependance = is_recommend(item.depends_on, vert, orange)
             if not dependance:
@@ -106,6 +114,12 @@ def recommend(meteo, sensibilite, intensite, duree, catalogue):
                     vert.remove(item)
                 elif item in orange:
                     orange.remove(item)
+            if dependance == "vert" and item in orange:
+                vert.append(item)
+                orange.remove(item)
+            if dependance == "orange" and item in vert:
+                orange.append(item)
+                vert.remove(item)
 
         # Maillot UV — uniquement si index UV suffisant
         if not meteo["uv_index"] >= SEUIL_UV:
@@ -121,10 +135,16 @@ def recommend(meteo, sensibilite, intensite, duree, catalogue):
             elif item in orange and item.nom == "Veste pluie":
                 orange.remove(item)
 
+        if "Sous maillot" in item.nom:
+            if item in vert:
+                vert.remove(item)
+                orange.append(item)
+
+
     return {"vert": vert, "orange": orange, "temp_effective": temp_effective}
 
 
-def is_recommend(nom: str, vert: list, orange: list) -> bool:
+def is_recommend(nom: str, vert: list, orange: list):
     """Vérifie si un item est présent dans les listes de recommandations.
 
     Args:
@@ -135,7 +155,10 @@ def is_recommend(nom: str, vert: list, orange: list) -> bool:
     Returns:
         True si l'item est trouvé dans vert ou orange, False sinon.
     """
-    for item in vert + orange:
+    for item in vert:
         if item.nom == nom:
-            return True
-    return False
+            return "vert"
+    for item in orange:
+        if item.nom == nom:
+            return "orange"
+    return None
