@@ -41,8 +41,10 @@ def recommend(meteo, sensibilite, intensite, duree, catalogue):
                        + OFFSET_INTENSITE[intensite]
                        + offset_duree
 
-    Où offset_duree vaut 0 si duree <= 2h, -1 si duree <= 4h, -2 au-delà
-    (sorties longues = plus conservateur, température effective abaissée).
+    Où offset_duree est conditionné par la température effective (actif uniquement si temp <= 8°C) :
+    - Si temp <= 5°C : offset = -1 si duree > 2h, -2 si duree > 4h
+    - Si temp <= 8°C : offset = -1 si duree > 3h, -2 si duree > 6h
+    (sorties longues par temps froid = plus conservateur, température effective abaissée)
 
     Chaque item disponible du catalogue est classé :
     - vert   : temp_effective dans [temp_min, temp_max] de l'item → indispensable
@@ -52,11 +54,11 @@ def recommend(meteo, sensibilite, intensite, duree, catalogue):
     Après classification, deux passes de nettoyage sont appliquées :
     - Dépendances (depends_on) : un item est retiré si son item parent n'est pas recommandé
     - Conditions météo : Maillot UV retiré si uv_index < SEUIL_UV,
-                         Veste pluie retirée si precipitation_proba < SEUIL_PLUIE
+                         Veste pluie retirée si precipitation_mm < SEUIL_PLUIE
 
     Args:
         meteo: Dict météo retourné par get_meteo() — doit contenir au minimum
-               "temp_ressenti", "uv_index" et "precipitation_proba".
+               "temp_ressenti", "uv_index" et "precipitation_mm".
         sensibilite: Profil thermique — clé de OFFSET_SENSIBILITE (ex: "🥶🥶", "😎", "🔥🔥").
         intensite: Niveau d'effort — "Endurance", "Tempo" ou "Intensif".
         duree: Durée de la sortie en heures (entier ou float).
@@ -153,7 +155,7 @@ def is_recommend(nom: str, vert: list, orange: list):
         orange: Liste des items optionnels.
 
     Returns:
-        True si l'item est trouvé dans vert ou orange, False sinon.
+        "vert" si l'item est dans vert, "orange" s'il est dans orange, None sinon.
     """
     for item in vert:
         if item.nom == nom:

@@ -1,5 +1,20 @@
+"""Fonctions HTML de mise en forme conditionnelle des métriques météo.
+
+Chaque fonction retourne un bloc HTML <div> prêt à être passé à st.markdown(unsafe_allow_html=True).
+La couleur du texte change selon des seuils propres à chaque métrique.
+"""
+
 
 def color_temp(label, value):
+    """Retourne un bloc HTML avec la température colorée selon l'intensité du froid/chaud.
+
+    Args:
+        label: Libellé affiché au-dessus de la valeur.
+        value: Température en °C (float).
+
+    Returns:
+        Chaîne HTML à passer à st.markdown(unsafe_allow_html=True).
+    """
     if value < 8:
         color = "#4a9eff"
     elif value < 25:
@@ -17,6 +32,15 @@ def color_temp(label, value):
     """
 
 def color_vent(label, value):
+    """Retourne un bloc HTML avec la vitesse du vent colorée selon l'intensité.
+
+    Args:
+        label: Libellé affiché au-dessus de la valeur.
+        value: Vitesse du vent en km/h (float).
+
+    Returns:
+        Chaîne HTML à passer à st.markdown(unsafe_allow_html=True).
+    """
     if value < 20:
         color = "inherit"
     elif value < 30:
@@ -34,6 +58,15 @@ def color_vent(label, value):
     """
 
 def color_rafale(label, value):
+    """Retourne un bloc HTML avec la vitesse des rafales colorée selon l'intensité.
+
+    Args:
+        label: Libellé affiché au-dessus de la valeur.
+        value: Vitesse des rafales en km/h (float).
+
+    Returns:
+        Chaîne HTML à passer à st.markdown(unsafe_allow_html=True).
+    """
     if value < 30:
         color = "inherit"
     elif value < 40:
@@ -51,6 +84,15 @@ def color_rafale(label, value):
     """
 
 def color_uv(label, value):
+    """Retourne un bloc HTML avec l'index UV coloré selon le niveau d'exposition.
+
+    Args:
+        label: Libellé affiché au-dessus de la valeur.
+        value: Index UV (float).
+
+    Returns:
+        Chaîne HTML à passer à st.markdown(unsafe_allow_html=True).
+    """
     if value < 7:
         color = "inherit"
     elif value < 8:
@@ -66,6 +108,15 @@ def color_uv(label, value):
     """
 
 def color_pluie(label, value):
+    """Retourne un bloc HTML avec le cumul de pluie coloré selon la quantité.
+
+    Args:
+        label: Libellé affiché au-dessus de la valeur.
+        value: Cumul de précipitations en mm (float).
+
+    Returns:
+        Chaîne HTML à passer à st.markdown(unsafe_allow_html=True).
+    """
     if value < 1.5:
         color = "inherit"
     elif value < 3:
@@ -83,6 +134,17 @@ def color_pluie(label, value):
     """
 
 def no_color(label, value, fmt=None, unite=""):
+    """Retourne un bloc HTML sans mise en forme conditionnelle (couleur neutre).
+
+    Args:
+        label: Libellé affiché au-dessus de la valeur.
+        value: Valeur à afficher (str, int ou float).
+        fmt: Format optionnel à appliquer à la valeur (ex: ".1f"). Ignoré si None.
+        unite: Unité affichée après la valeur (ex: "%"). Vide par défaut.
+
+    Returns:
+        Chaîne HTML à passer à st.markdown(unsafe_allow_html=True).
+    """
     color = "inherit"
     formatted = f"{value:{fmt}}" if fmt else str(value)
     return f"""

@@ -128,8 +128,10 @@ def build_weather_dict(raw, date, heure_depart, duree):
         - temp_ressenti (float)       : température ressentie à l'heure de départ (°C)
         - temp_ressenti_max (float)   : température ressentie max sur la durée (°C)
         - vent_vitesse (float)        : vitesse du vent max sur la durée (km/h)
+        - rafales (float)             : vitesse des rafales max sur la durée (km/h)
         - vent_direction (str)        : direction du vent au départ (ex: "Ouest")
         - uv_index (float)            : index UV max sur la durée
+        - precipitation_mm (float)    : cumul des précipitations sur la durée (mm)
         - humidite (int)              : humidité relative max sur la durée (%)
         - precipitation_proba (int)   : probabilité de précipitations max sur la durée (%)
         - weathercode (int)           : code WMO au départ → converti en emoji via weathercode_to_emoji()

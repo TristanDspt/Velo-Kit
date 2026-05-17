@@ -204,7 +204,7 @@ if ville_select:
     with st.container(border=True):
         reco = recommend(meteo, sensibilite, intensite, duree, CATALOGUE)
 
-        col1, col2, col3 = st.columns([1,1,1])
+        col1, col2, col3 = st.columns(3)
 
         with col1:
             with st.container(border=True):
@@ -272,5 +272,5 @@ if ville_select:
 else:
     _, col, _ = st.columns(3)
     with col:
-        st.markdown("<h3 style='text-align: center; margin-top: 50px; margin-bottom: 10px;'>powered by Team Raclette</h3>", unsafe_allow_html=True)
+        st.markdown("<h3 style='text-align: center; margin-top: 40px; margin-bottom: 10px;'>powered by Team Raclette</h3>", unsafe_allow_html=True)
         st.image("assets/logo_team_raclette_final.png", width='stretch')

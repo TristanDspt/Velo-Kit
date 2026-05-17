@@ -8,7 +8,7 @@ Accessible via un lien public, sans installation, sans compte.
 
 ## Demo
 
-[🚴 VeloKit](https://velo-kit.streamlit.app)
+[🚴 VeloKit](https://velokit.streamlit.app)
 
 ---
 
@@ -37,17 +37,20 @@ Les paramètres sont pris en compte dans cet ordre :
 
 1. **Disponibilité** — un item non coché n'est jamais recommandé
 2. **Intensité** — intensif = tu génères plus de chaleur = moins de couches
-3. **Durée** — sortie longue = plus conservateur, température effective abaissée
+3. **Durée** — sortie longue par temps froid = plus conservateur (offset actif uniquement si `temp < 8°C`)
 4. **Profil thermique** — décale la température effective de -2°C à +2°C
 
-Certains items ont des **dépendances** — ils n'apparaissent que si un autre item est recommandé :
+Certains items ont des **dépendances** — ils n'apparaissent que si un autre item est recommandé, et héritent de sa couleur (vert/orange) :
 - Jambières → uniquement avec cuissard court
 - Manchettes → uniquement avec maillot manches courtes
 - Gilet sans manches → uniquement avec maillot manches courtes
+- Sous-maillots → toujours affichés en orange (optionnels par définition)
 
 Certains items sont **conditionnels à la météo** :
-- Veste pluie → uniquement si probabilité de pluie > 33%
-- Maillot UV → uniquement si index UV > 8
+- Veste pluie → uniquement si précipitations >= 1.5mm sur la durée de la sortie
+- Maillot UV → uniquement si index UV >= 8
+
+**Fallback maillot** : si le maillot manches longues est indisponible ou hors plage (et hors conditions hivernales), le maillot manches courtes est automatiquement recommandé en vert.
 
 ---
 
@@ -97,9 +100,13 @@ velo_kit/
 ├── core/
 │   ├── weather.py          # Appel API Open-Meteo + géolocalisation
 │   ├── recommender.py      # Logique de recommandation
-│   └── gear.py             # Classe GearItem + catalogue du matos
+│   ├── gear.py             # Classe GearItem + catalogue du matos
+│   └── ui.py               # Fonctions HTML mise en forme conditionnelle météo
 │
+├── .streamlit/
+│   └── config.toml         # Thème dark
 ├── requirements.txt
+├── ROADMAP.md
 └── README.md
 ```
 
