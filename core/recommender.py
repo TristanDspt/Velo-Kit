@@ -29,7 +29,7 @@ OFFSET_INTENSITE = {
 
 # Seuils conditionnels météo
 SEUIL_UV = 8           # Index UV au-delà duquel le Maillot UV est recommandé
-SEUIL_PLUIE = 1    # Quantité de pluie en mm au-delà de laquelle la Veste pluie est recommandée
+SEUIL_PLUIE = 1.5      # Quantité de pluie en mm au-delà de laquelle la Veste pluie est recommandée
 
 
 def recommend(meteo, sensibilite, intensite, duree, catalogue):
