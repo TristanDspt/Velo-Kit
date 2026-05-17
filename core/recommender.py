@@ -29,7 +29,7 @@ OFFSET_INTENSITE = {
 
 # Seuils conditionnels météo
 SEUIL_UV = 8           # Index UV au-delà duquel le Maillot UV est recommandé
-SEUIL_PLUIE = 33.33    # Probabilité de pluie (%) au-delà de laquelle la Veste pluie est recommandée
+SEUIL_PLUIE = 1    # Quantité de pluie en mm au-delà de laquelle la Veste pluie est recommandée
 
 
 def recommend(meteo, sensibilite, intensite, duree, catalogue):
@@ -115,7 +115,7 @@ def recommend(meteo, sensibilite, intensite, duree, catalogue):
                 orange.remove(item)
 
         # Veste pluie — uniquement si probabilité de pluie suffisante
-        if not meteo["precipitation_proba"] >= SEUIL_PLUIE:
+        if not meteo["precipitation_mm"] >= SEUIL_PLUIE:
             if item in vert and item.nom == "Veste pluie":
                 vert.remove(item)
             elif item in orange and item.nom == "Veste pluie":
