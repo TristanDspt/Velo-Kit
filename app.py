@@ -35,7 +35,7 @@ st.markdown("<h1 style='text-align: center; margin-top: -80px; margin-bottom: 10
 # --- Explications ---
 with st.expander("Comment ça marche ❓"):
     st.markdown("""
-        Renseigne ta ville, la date et l heure de départ — l'app récupère automatiquement 
+        Renseigne ta ville, la date et l'heure de départ — l'app récupère automatiquement 
         la météo. Coche ensuite le matos que t'as dans ton armoire, 
         règle ton profil thermique, ton intensité prévue et la durée de ta sortie.
 
