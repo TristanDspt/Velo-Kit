@@ -41,7 +41,7 @@ WEATHER_EMOJI = {
 }
 
 
-@st.cache_data
+@st.cache_data(ttl=86400)
 def get_coordinates(ville: str) -> list[dict]:
     """Recherche une ville via l'API geocoding Open-Meteo.
 
@@ -73,7 +73,7 @@ def get_coordinates(ville: str) -> list[dict]:
     return data
 
 
-
+@st.cache_data(ttl=3600)
 def get_weather(lat, lon, date):
     """Récupère les données météo horaires pour une journée via l'API Open-Meteo.
 
