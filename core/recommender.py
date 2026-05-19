@@ -117,8 +117,9 @@ def recommend(meteo, sensibilite, intensite, duree, catalogue):
                 elif item in orange:
                     orange.remove(item)
             if dependance == "vert" and item in orange:
-                vert.append(item)
-                orange.remove(item)
+                if temp_effective <= 12 or item.temp_min <= temp_effective <= item.temp_max:
+                    vert.append(item)
+                    orange.remove(item)
             if dependance == "orange" and item in vert:
                 orange.append(item)
                 vert.remove(item)
