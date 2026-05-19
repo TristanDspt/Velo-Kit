@@ -209,23 +209,23 @@ if ville_select:
         with col1:
             with st.container(border=True):
                 with st.container(border=True):
-                    st.markdown("<h4 style='text-align: center; margin-top: -8px; margin-bottom: -2px;'>Torse</h4>", unsafe_allow_html=True)
-                item_vert_torse = [item for item in reco["vert"] if item.partie_du_corps == "torse"]
-                item_orange_torse = [item for item in reco["orange"] if item.partie_du_corps == "torse"]
-                for item in item_vert_torse:
-                    st.markdown(f"<p style='padding-left: 40px;'>🟢 {item.nom}</p>", unsafe_allow_html=True)
-                for item in item_orange_torse:
-                    st.markdown(f"<p style='padding-left: 40px;'>🟠 {item.nom}</p>", unsafe_allow_html=True)
-
-        with col2:
-            with st.container(border=True):
-                with st.container(border=True):
                     st.markdown("<h4 style='text-align: center; margin-top: -8px; margin-bottom: -2px;'>Jambes</h4>", unsafe_allow_html=True)
                 item_vert_jambes = [item for item in reco["vert"] if item.partie_du_corps == "jambes"]
                 item_orange_jambes = [item for item in reco["orange"] if item.partie_du_corps == "jambes"]
                 for item in item_vert_jambes:
                     st.markdown(f"<p style='padding-left: 40px;'>🟢 {item.nom}</p>", unsafe_allow_html=True)
                 for item in item_orange_jambes:
+                    st.markdown(f"<p style='padding-left: 40px;'>🟠 {item.nom}</p>", unsafe_allow_html=True)
+
+        with col2:
+            with st.container(border=True):
+                with st.container(border=True):
+                    st.markdown("<h4 style='text-align: center; margin-top: -8px; margin-bottom: -2px;'>Torse</h4>", unsafe_allow_html=True)
+                item_vert_torse = [item for item in reco["vert"] if item.partie_du_corps == "torse"]
+                item_orange_torse = [item for item in reco["orange"] if item.partie_du_corps == "torse"]
+                for item in item_vert_torse:
+                    st.markdown(f"<p style='padding-left: 40px;'>🟢 {item.nom}</p>", unsafe_allow_html=True)
+                for item in item_orange_torse:
                     st.markdown(f"<p style='padding-left: 40px;'>🟠 {item.nom}</p>", unsafe_allow_html=True)
 
         with col3:
