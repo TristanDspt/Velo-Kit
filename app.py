@@ -30,7 +30,7 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # --- Header ---
-st.markdown("<h1 style='text-align: center; margin-top: -80px; margin-bottom: 10px;'>🚴 Velo Kit 🚴</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center; margin-top: -60px; margin-bottom: 10px;'>🚴 Velo Kit 🚴</h1>", unsafe_allow_html=True)
 
 # --- Explications ---
 with st.expander("Comment ça marche ❓"):
