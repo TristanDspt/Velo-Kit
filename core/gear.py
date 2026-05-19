@@ -57,7 +57,7 @@ CATALOGUE = [
     GearItem("Sous maillot mi-saison",  "torse",          6.1,   12.0,  disponible=False, depends_on="Maillot manches courtes"),
     GearItem("Sous maillot ete",        "torse",         12.1,   40.0,  disponible=False, depends_on="Maillot manches courtes"),
     GearItem("Gilet sans manches",      "torse",         10.0,   14.0,                    depends_on="Maillot manches courtes"),
-    GearItem("Manchettes",              "torse",         10.0,   16.0,  disponible=False, depends_on="Maillot manches courtes"),
+    GearItem("Manchettes",              "torse",         10.0,   15.0,  disponible=False, depends_on="Maillot manches courtes"),
     GearItem("Couvre-chaussures",       "extrémités",   -10.0,   5.0),
     GearItem("Couvre-orteils",          "extrémités",     5.1,    8.0,  disponible=False),
     GearItem("Gants hiver",             "extrémités",   -10.0,   6.0),
