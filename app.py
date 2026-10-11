@@ -72,7 +72,7 @@ with st.expander("Détails de ta sortie", expanded=True):
             label="Date",
             min_value=date.today(),
             max_value=date.today() + timedelta(days=7),
-            value=date.today() + timedelta(days=1),
+            value=date.today(),
         )
 
     with col4:
